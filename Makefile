@@ -19,9 +19,9 @@ else
 include Makefile.systype
 endif
 
-MAKEFILES = Makefile config-makefile
+AREPO_MAKEFILES = Makefile config-makefile
 ifeq ($(wildcard Makefile.systype), Makefile.systype)
-MAKEFILES += Makefile.systype
+AREPO_MAKEFILES += Makefile.systype
 endif
 
 $(info Build configuration:)
@@ -362,16 +362,16 @@ clean:
 	@rm -f $(TO_CHECK) $(CONFIG_CHECK)
 	@rm -rf $(BUILD_DIR)
 
-$(BUILD_DIR)/%.o: $(SRC_DIR)/%.c $(INCL) $(MAKEFILES)
+$(BUILD_DIR)/%.o: $(SRC_DIR)/%.c $(INCL) $(AREPO_MAKEFILES)
 	$(CC) $(CFLAGS) -c $< -o $@
 
-$(BUILD_DIR)/compile_time_info.o: $(BUILD_DIR)/compile_time_info.c $(MAKEFILES)
+$(BUILD_DIR)/compile_time_info.o: $(BUILD_DIR)/compile_time_info.c $(AREPO_MAKEFILES)
 	$(CC) $(CFLAGS) -c $< -o $@
 
-$(BUILD_DIR)/compile_time_info_hdf5.o: $(BUILD_DIR)/compile_time_info_hdf5.c $(MAKEFILES)
+$(BUILD_DIR)/compile_time_info_hdf5.o: $(BUILD_DIR)/compile_time_info_hdf5.c $(AREPO_MAKEFILES)
 	$(CC) $(CFLAGS) -c $< -o $@
 
-$(BUILD_DIR)/%.o: $(SRC_DIR)/%.cu $(INCL) $(MAKEFILES)
+$(BUILD_DIR)/%.o: $(SRC_DIR)/%.cu $(INCL) $(AREPO_MAKEFILES)
 	$(NVCC)  -c $< -o $@
 
 # sanity checks:
