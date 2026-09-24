@@ -1,0 +1,151 @@
+# Shared compile-time capability contract. Profiles instantiate `arepo_build`
+# and specify only departures from these safe defaults. Native names live only
+# in the Python catalog; metadata cite the Arepo configuration-options guide.
+$schema arepo_build
+  boundaries
+    x_mode int = 0
+      !options [0,1,2]
+      ?descr "X-boundary mode; zero leaves no REFLECTIVE_X compile option."
+      ?url "https://arepo-code.org/wp-content/userguide/config-options.html"
+  geometry
+    one_dimensional bool = false
+      ?descr "Restrict the Voronoi mesh and hydrodynamics to one dimension."
+      ?url "https://arepo-code.org/wp-content/userguide/config-options.html"
+  physics
+    cooling bool = false
+      ?descr "Compile radiative cooling and UV-background support."
+      ?url "https://arepo-code.org/wp-content/userguide/config-options.html"
+    star_formation bool = false
+      ?descr "Compile the Springel-Hernquist multiphase star-formation model."
+      ?url "https://arepo-code.org/wp-content/userguide/config-options.html"
+    magnetohydrodynamics bool = false
+      ?descr "Compile ideal magnetohydrodynamics."
+      ?url "https://arepo-code.org/wp-content/userguide/config-options.html"
+      powell_cleaning bool = false
+        ?descr "Use Powell eight-wave divergence-control terms for MHD."
+        ?url "https://arepo-code.org/wp-content/userguide/config-options.html"
+      powell_limit_timestep bool = false
+        ?descr "Limit timesteps for Powell divergence-control stability."
+        ?url "https://arepo-code.org/wp-content/userguide/config-options.html"
+  gravity
+    self_gravity bool = false
+      ?descr "Compile gravitational interactions between particles and cells."
+      ?url "https://arepo-code.org/wp-content/userguide/config-options.html"
+    hierarchical bool = false
+      ?descr "Use hierarchical gravity time integration."
+      ?url "https://arepo-code.org/wp-content/userguide/config-options.html"
+    cell_center_evaluation bool = false
+      ?descr "Evaluate cell gravity at geometric centres; requires hierarchical gravity."
+      ?url "https://arepo-code.org/wp-content/userguide/config-options.html"
+    direct_summation bool = false
+      ?descr "Allow direct summation for small active particle sets."
+      ?url "https://arepo-code.org/wp-content/userguide/config-options.html"
+      threshold int = 3000
+        !condition ({.} > 0)
+        ?descr "Active-particle threshold below which direct gravity summation is used."
+        ?url "https://arepo-code.org/wp-content/userguide/config-options.html"
+    multiple_node_softening bool = false
+      ?descr "Retain component-specific softenings when using softened tree nodes."
+      ?url "https://arepo-code.org/wp-content/userguide/config-options.html"
+    individual_softening_type_mask int = 0
+      !condition ({.} >= 0)
+      ?descr "Particle-type bit mask selecting individual gravity softening."
+      ?url "https://arepo-code.org/wp-content/userguide/config-options.html"
+    particle_mesh bool = false
+      ?descr "Enable periodic particle-mesh gravity in the TreePM solver."
+      ?url "https://arepo-code.org/wp-content/userguide/config-options.html"
+      grid_resolution int = 0
+        !condition ({.} >= 0)
+        ?descr "Particle-mesh cells per dimension; zero is disabled."
+        ?url "https://arepo-code.org/wp-content/userguide/config-options.html"
+      short_range_cutoff float = 4.5
+        !condition ({.} > 0)
+        ?descr "TreePM short-range cutoff in particle-mesh cell units."
+        ?url "https://arepo-code.org/wp-content/userguide/config-options.html"
+    softening_types int = 1
+      !condition ({.} >= 1)
+      ?descr "Number of available gravitational-softening families."
+      ?url "https://arepo-code.org/wp-content/userguide/config-options.html"
+  time
+    force_equal_timesteps bool = false
+      ?descr "Force all particles/cells onto equal timesteps."
+      ?url "https://arepo-code.org/wp-content/userguide/config-options.html"
+    tree_based_timesteps bool = false
+      ?descr "Use the non-local, tree-based timestep criterion."
+      ?url "https://arepo-code.org/wp-content/userguide/config-options.html"
+  precision
+    mode int = 0
+      !options [0,1,2,3]
+      ?descr "Arepo precision mode; zero leaves DOUBLEPRECISION unspecified."
+      ?url "https://arepo-code.org/wp-content/userguide/config-options.html"
+    fftw_double bool = false
+      ?descr "Use double-precision FFTW transforms."
+      ?url "https://arepo-code.org/wp-content/userguide/config-options.html"
+    neighbor_tree_double bool = false
+      ?descr "Use double precision for neighbor-tree node extensions."
+      ?url "https://arepo-code.org/wp-content/userguide/config-options.html"
+  io
+    hdf5 bool = false
+      ?descr "Compile HDF5 snapshot and initial-condition support."
+      ?url "https://arepo-code.org/wp-content/userguide/config-options.html"
+    reduced_flush bool = false
+      ?descr "Reduce log-file flush frequency."
+      ?url "https://arepo-code.org/wp-content/userguide/config-options.html"
+    input_double_precision bool = false
+      ?descr "Read initial conditions in double precision."
+      ?url "https://arepo-code.org/wp-content/userguide/config-options.html"
+    output_coordinates_double bool = false
+      ?descr "Always write coordinates in double precision."
+      ?url "https://arepo-code.org/wp-content/userguide/config-options.html"
+  mesh
+    refinement bool = false
+      ?descr "Compile cell refinement and derefinement."
+      ?url "https://arepo-code.org/wp-content/userguide/config-options.html"
+    adaptive_hydro_softening bool = false
+      ?descr "Compile adaptive gas-cell gravitational softening."
+      ?url "https://arepo-code.org/wp-content/userguide/config-options.html"
+    face_angle_regularization bool = false
+      ?descr "Regularize mesh cells using their maximum face angle."
+      ?url "https://arepo-code.org/wp-content/userguide/config-options.html"
+    center_of_mass_drift bool = false
+      ?descr "Regularize mesh-generating-point drift from cell centres of mass."
+      ?url "https://arepo-code.org/wp-content/userguide/config-options.html"
+    drift_limited_by_sound_speed bool = false
+      ?descr "Limit centre-of-mass regularization by local sound speed."
+      ?url "https://arepo-code.org/wp-content/userguide/config-options.html"
+  numerics
+    riemann_hlld bool = false
+      ?descr "Use the HLLD Riemann solver for ideal MHD."
+      ?url "https://arepo-code.org/wp-content/userguide/config-options.html"
+  analysis
+    fof bool = false
+      ?descr "Compile the friends-of-friends halo finder."
+      ?url "https://arepo-code.org/wp-content/userguide/config-options.html"
+      primary_link_type_mask int = 2
+        !condition ({.} >= 0)
+        ?descr "Particle-type bit mask used as FoF primary linking tracers."
+        ?url "https://arepo-code.org/wp-content/userguide/config-options.html"
+      secondary_link_type_mask int = 0
+        !condition ({.} >= 0)
+        ?descr "Particle-type bit mask attached to nearest FoF primary tracers."
+        ?url "https://arepo-code.org/wp-content/userguide/config-options.html"
+    subfind bool = false
+      ?descr "Compile the Subfind substructure finder; requires FoF."
+      ?url "https://arepo-code.org/wp-content/userguide/config-options.html"
+      save_density_estimates bool = false
+        ?descr "Save Subfind smoothing lengths, densities, and velocity dispersions."
+        ?url "https://arepo-code.org/wp-content/userguide/config-options.html"
+      calculate_velocity_dispersion bool = false
+        ?descr "Calculate additional Subfind velocity-dispersion information."
+        ?url "https://arepo-code.org/wp-content/userguide/config-options.html"
+      extended_properties bool = false
+        ?descr "Calculate extended Subfind angular-momentum and energy properties."
+        ?url "https://arepo-code.org/wp-content/userguide/config-options.html"
+  output
+    process_schedule_exactly bool = false
+      ?descr "Process output-list times before starting to improve timing accuracy."
+      ?url "https://arepo-code.org/wp-content/userguide/config-options.html"
+  diagnostics
+    debug bool = false
+      ?descr "Enable Arepo debugging facilities and core-dump support."
+      ?url "https://arepo-code.org/wp-content/userguide/config-options.html"

@@ -1,0 +1,20 @@
+# Reusable Arepo snapshot-output contract.
+$schema snapshot_settings
+  directory str
+    ?descr "Directory receiving Arepo snapshots."
+    ?url "https://arepo-code.org/wp-content/userguide/parameterfile.html"
+  base_name str
+    ?descr "Prefix used for snapshot filenames."
+    ?url "https://arepo-code.org/wp-content/userguide/parameterfile.html"
+  format int
+    !options [1,2,3]
+    ?descr "Arepo snapshot serialization format."
+    ?url "https://arepo-code.org/wp-content/userguide/parameterfile.html"
+  files int
+    !condition ({.} >= 1)
+    ?descr "Number of files produced for each snapshot."
+    ?url "https://arepo-code.org/wp-content/userguide/parameterfile.html"
+  parallel_files int
+    !condition ({.} >= 1)
+    ?descr "Maximum number of snapshot files written concurrently."
+    ?url "https://arepo-code.org/wp-content/userguide/parameterfile.html"

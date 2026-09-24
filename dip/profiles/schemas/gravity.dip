@@ -1,0 +1,41 @@
+# Reusable runtime gravity contracts. Softening lists remain profile-owned:
+# their lengths depend on the selected number of compiled softening types.
+$schema gravity_force_accuracy
+  integration float = 0.012
+    ?descr "Integration accuracy tolerance."
+    ?url "https://arepo-code.org/wp-content/userguide/parameterfile.html"
+  opening_angle float = 0.7
+    ?descr "Tree opening angle."
+    ?url "https://arepo-code.org/wp-content/userguide/parameterfile.html"
+  relative_force float = 0.0025
+    ?descr "Relative force-error tolerance."
+    ?url "https://arepo-code.org/wp-content/userguide/parameterfile.html"
+  opening_criterion int = 1
+    !options [0,1]
+    ?descr "Tree opening-criterion selector."
+
+$schema gravity_domain_decomposition
+  multiple_domains int = 1
+    !condition ({.} >= 1)
+    ?descr "Number of simultaneous domain decompositions."
+  top_node_factor float = 2.5
+    !condition ({.} > 0)
+    ?descr "Top-level tree-node allocation factor."
+  active_fraction float = 0.01
+    !condition ({.} >= 0)
+    ?descr "Active-particle fraction that triggers a domain decomposition."
+
+$schema gravity_hydro_softening
+  gas_softening_factor float = 1
+    !condition ({.} > 0)
+    ?descr "Gas-cell softening relative to the assigned base softening."
+  minimum_comoving float = 0 arepo_length
+    ?descr "Minimum comoving adaptive gas softening."
+  spacing float = 1
+    !condition ({.} >= 1)
+    ?descr "Geometric spacing between adaptive gas softening levels."
+
+$schema gravity_settings
+  force_accuracy : gravity_force_accuracy
+  domain_decomposition : gravity_domain_decomposition
+  hydro : gravity_hydro_softening

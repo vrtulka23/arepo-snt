@@ -1,0 +1,9 @@
+# Fundamental code bases used by examples/mhd_shocktube_1d.
+code_units
+  length float = 0.01 m
+    ?descr "One Arepo length unit (one centimetre)."
+  mass float = 0.001 kg
+    ?descr "One Arepo mass unit (one gram)."
+  velocity float = 0.01 m/s
+    ?descr "One Arepo velocity unit (one centimetre per second)."
+

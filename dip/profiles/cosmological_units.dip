@@ -1,0 +1,10 @@
+# Fundamental physical bases shared by the cosmological-volume examples.
+code_units
+  length float = 3.085678e19 m
+    ?descr "One Arepo length unit (one kiloparsec)."
+    ?title "Arepo parameter reference"
+    ?url "https://arepo-code.org/wp-content/userguide/parameterfile.html"
+  mass float = 1.989e40 kg
+    ?descr "One Arepo mass unit (10^10 solar masses)."
+  velocity float = 1000 m/s
+    ?descr "One Arepo velocity unit (one kilometre per second)."

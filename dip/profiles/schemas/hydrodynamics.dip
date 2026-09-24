@@ -1,0 +1,25 @@
+# Reusable hydrodynamics runtime contract. Code-unit custom units are supplied
+# by the generator before this schema is parsed.
+$schema hydrodynamics_settings
+  courant_factor float = 0.3
+    !condition ({.} >= 0)
+    ?descr "Courant-Friedrichs-Lewy timestep factor."
+    ?url "https://arepo-code.org/wp-content/userguide/parameterfile.html"
+  initial_gas_temperature float = 0 K
+    ?descr "Initial gas temperature used where initial conditions lack it."
+  minimum_gas_temperature float = 0 K
+    ?descr "Temperature floor applied to gas."
+  minimum_startup_density float = 0 arepo_density
+    ?descr "Minimum density imposed while starting the run."
+  internal_energy_density_limit float = 0
+    ?descr "Density threshold for an internal-energy limit."
+  internal_energy_floor float = 0
+    ?descr "Internal-energy floor applied below the configured density threshold."
+  minimum_specific_energy float = 0 arepo_specific_energy
+    ?descr "Minimum specific internal energy."
+  target_neighbors int = 64
+    !condition ({.} > 0)
+    ?descr "Desired hydrodynamic neighbor count."
+  maximum_neighbor_deviation int = 4
+    !condition ({.} >= 0)
+    ?descr "Permitted deviation from the desired neighbor count."

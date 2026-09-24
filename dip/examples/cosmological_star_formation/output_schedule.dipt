@@ -1,0 +1,11 @@
+# A DIPL table, emitted as Arepo's two-column output-list file.
+output_schedule table = """
+scale_factor float
+write_flag int
+---
+0.1 1
+0.25 1
+0.5 1
+0.75 1
+1.0 1
+"""

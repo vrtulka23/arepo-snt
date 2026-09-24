@@ -1,0 +1,139 @@
+# Semantic counterpart of examples/mhd_shocktube_1d.
+experiment
+  setup
+    kind str = "mhd_shock_tube"
+      !options ["cosmological_star_formation","cosmological_gravity_only","mhd_shock_tube"]
+
+build : arepo_build
+  boundaries
+    x_mode = 2
+  geometry
+    one_dimensional = true
+  physics
+    cooling = false
+    star_formation = false
+    magnetohydrodynamics = true
+      powell_cleaning = true
+      powell_limit_timestep = true
+  gravity
+    self_gravity = false
+    particle_mesh = false
+    softening_types = 6
+  io
+    hdf5 = true
+    reduced_flush = false
+    input_double_precision = true
+  mesh
+    refinement = false
+    adaptive_hydro_softening = false
+    face_angle_regularization = true
+    center_of_mass_drift = true
+    drift_limited_by_sound_speed = true
+  numerics
+    riemann_hlld = true
+  time
+    force_equal_timesteps = true
+  precision
+    mode = 1
+  diagnostics
+    debug = true
+
+input
+  initial_conditions
+    path str = "./IC"
+    format int = 3
+      !options [1,2,3]
+
+output
+  schedule
+    enabled bool = false
+    filename str = "ol"
+  snapshots : snapshot_settings
+    directory = "./output"
+    base_name = "snap"
+    format = 3
+    files = 1
+    parallel_files = 1
+
+resources
+  memory
+    per_rank int = 2500
+  wall_clock
+    limit float = 90000 s
+    restart_interval float = 9000 s
+    log_flush_interval float = 0 s
+  execution
+    resubmit bool = false
+    resubmit_command str = "my-scriptfile"
+
+simulation
+  domain
+    boundary str = "periodic"
+    box
+      size float = 2.5 arepo_length
+  time
+    coordinate str = "linear"
+    initial_redshift float = 0
+    final_redshift float = 0
+    begin float = 0
+    end float = 0.4
+    maximum_step float = 0.1
+    minimum_step float = 1e-10
+    statistics_interval float = 0.005
+    first_snapshot float = 0
+    snapshot_interval float = 0.4
+    timestep_criterion int = 1
+
+cosmology : cosmology_settings
+  matter_density = 0
+  baryon_density = 0
+  hubble_parameter = 1
+  initial_redshift = {?simulation.time.initial_redshift}
+  final_redshift = {?simulation.time.final_redshift}
+  dark_energy_density float = 0
+  dark_matter_density float = 0
+
+gravity : gravity_settings
+  force_accuracy
+    integration = 0.1
+    opening_angle = 0.1
+    relative_force = 0.1
+    opening_criterion = 1
+  domain_decomposition
+    multiple_domains = 2
+    top_node_factor = 4
+    active_fraction = 0.5
+  softenings
+    comoving list
+    comoving[] float = 0.1 arepo_length
+    comoving[] float = 0.1 arepo_length
+    comoving[] float = 0.1 arepo_length
+    comoving[] float = 0.1 arepo_length
+    comoving[] float = 0.1 arepo_length
+    comoving[] float = 0.1 arepo_length
+    physical_maximum list
+    physical_maximum[] float = 0.1 arepo_length
+    physical_maximum[] float = 0.1 arepo_length
+    physical_maximum[] float = 0.1 arepo_length
+    physical_maximum[] float = 0.1 arepo_length
+    physical_maximum[] float = 0.1 arepo_length
+    physical_maximum[] float = 0.1 arepo_length
+    particle_type_map int[6] = [0,0,0,0,0,0]
+  hydro
+    gas_softening_factor = 0.01
+
+hydrodynamics : hydrodynamics_settings
+  courant_factor = 0.3
+  initial_gas_temperature = 0 K
+  minimum_gas_temperature = 0 K
+  minimum_startup_density = 0 arepo_density
+  internal_energy_density_limit = 0
+  internal_energy_floor = 0
+  minimum_specific_energy = 0 arepo_specific_energy
+  target_neighbors = 64
+  maximum_neighbor_deviation = 2
+
+mesh : mesh_settings
+  regularization
+    shaping_speed = 0.5
+    maximum_face_angle_factor = 2.25
