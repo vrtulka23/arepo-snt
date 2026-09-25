@@ -11,7 +11,10 @@ $schema gravity_force_accuracy
     ?descr "Relative force-error tolerance."
     ?url "https://arepo-code.org/wp-content/userguide/parameterfile.html"
   opening_criterion int = 1
-    !options [0,1]
+    !options [
+      0, # geometric Barnes-Hut opening criterion
+      1  # relative opening criterion
+    ]
     ?descr "Tree opening-criterion selector."
 
 $schema gravity_domain_decomposition
@@ -34,6 +37,14 @@ $schema gravity_hydro_softening
   spacing float = 1
     !condition ({.} >= 1)
     ?descr "Geometric spacing between adaptive gas softening levels."
+
+# A DIPL collection item is a container. Its scalar softening length therefore
+# belongs to this named child instead of being stored on the item itself.
+$schema gravity_softening_length
+  length float arepo_length
+    !condition ({.} > 0 arepo_length)
+    ?descr "Gravity softening length in Arepo code-length units."
+    ?url "https://arepo-code.org/wp-content/userguide/parameterfile.html"
 
 $schema gravity_settings
   force_accuracy : gravity_force_accuracy

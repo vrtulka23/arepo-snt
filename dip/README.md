@@ -14,7 +14,7 @@ settings in the profile use those units.
 The files are loaded in this order:
 
 1. the selected shared or example-local unit profile
-2. `profiles/schemas/` (reference-derived code units, cosmology, snapshots, build, gravity, hydrodynamics, and mesh) and the selected `examples/<setup>/profile.dip`
+2. `profiles/schemas/` (reference-derived code units, input, output, resources, simulation, cosmology, snapshots, build, gravity, hydrodynamics, and mesh) and the selected `examples/<setup>/profile.dip`
 3. optional DIPL tables owned by that example
 4. `profiles/overrides.dip`
 
@@ -25,8 +25,11 @@ definitions or generated files.
 
 In particular, every profile instantiates the shared `arepo_build` schema in
 `profiles/schemas/build.dip`. The other shared contracts are split by concern:
-`cosmology.dip`, `snapshots.dip`, `gravity.dip`, `hydrodynamics.dip`, and
-`mesh.dip`. `arepo_build` is the compile-capability contract: profiles assign
+`input.dip`, `output.dip`, `resources.dip`, `simulation.dip`, `cosmology.dip`,
+`snapshots.dip`, `gravity.dip`, `hydrodynamics.dip`, and `mesh.dip`. The
+input/output, resource, and simulation schemas retain Arepo parameter-file
+documentation and options; profiles supply only values that vary.
+`arepo_build` is the compile-capability contract: profiles assign
 only the flags and values that differ from safe defaults, while `catalog.py`
 continues to own the translation to native Arepo names.
 Compile-only features are direct boolean nodes (for example,
@@ -45,8 +48,9 @@ PYTHONPATH=src python3 -m arepo_dipl generate --output generated
 The command writes `Config.sh`, `param.txt`, `output_list.txt`, and
 `provenance.json` below the requested output directory. It uses Arepo-safe
 comments in the two native files and stores catalog provenance in JSON.
-`Environment.save()` cannot yet replace this with DIPH5 because the current
-DIPH5 writer cannot serialize DIPL value nodes that have children.
+DIPH5 2.2 can serialize the value-bearing groups and collection items used
+here, but it does not yet restore this project's custom `arepo_*` unit
+registry in a fresh process; it therefore cannot replace portable provenance.
 
 Select the parallel 1D MHD shock-tube setup with:
 

@@ -2,7 +2,11 @@
 experiment
   setup
     kind str = "cosmological_star_formation"
-      !options ["cosmological_star_formation","cosmological_gravity_only","mhd_shock_tube"]
+      !options [
+        "cosmological_star_formation", # cosmological gas, cooling, and star formation
+        "cosmological_gravity_only",    # collisionless cosmological TreePM volume
+        "mhd_shock_tube"                 # one-dimensional ideal-MHD shock tube
+      ]
       ?descr "Selects the scientific setup branch."
       ?url "https://arepo-code.org/wp-content/userguide/examples.html"
 
@@ -23,56 +27,51 @@ build : arepo_build
     refinement = true
     adaptive_hydro_softening = true
 
-input
+input : input_settings
   initial_conditions
-    path str = "./ics"
-      ?descr "Initial-condition filename without the HDF5 suffix."
-    format int = 1
-      !options [1,2,3]
+    path = "./ics"
+    format = 1
 
-output
+output : output_settings
   schedule
-    enabled bool = true
-    filename str = "./output_list.txt"
-  snapshots : snapshot_settings
+    enabled = true
+    filename = "./output_list.txt"
+  snapshots
     directory = "./output"
     base_name = "snap"
     format = 3
     files = 1
     parallel_files = 1
 
-resources
+resources : resources_settings
   memory
-    per_rank int = 2500
-      ?descr "Memory allocated per MPI task in MiB."
+    per_rank = 2500
   wall_clock
-    limit float = 90000 s
-    restart_interval float = 12000 s
-    log_flush_interval float = 120 s
+    limit = 90000 s
+    restart_interval = 12000 s
+    log_flush_interval = 120 s
   execution
-    resubmit bool = false
-    resubmit_command str = "my-scriptfile"
+    resubmit = false
+    resubmit_command = "my-scriptfile"
 
-simulation
+simulation : simulation_settings
   domain
-    boundary str = "periodic"
-      !options ["periodic","non_periodic"]
+    boundary = "periodic"
     box
-      size float = 7500 arepo_length
-        ?descr "Comoving cubic-box edge length in Arepo code units."
+      size = 7500 arepo_length
   time
-    coordinate str = "scale_factor"
-    initial_redshift float = 127
-    final_redshift float = 0
+    coordinate = "scale_factor"
+    initial_redshift = 127
+    final_redshift = 0
     # Scale factors are DIPL-derived from redshift.
     begin float = ( 1 / ( 1 + {?simulation.time.initial_redshift} ) )
     end float = ( 1 / ( 1 + {?simulation.time.final_redshift} ) )
-    maximum_step float = 0.005
-    minimum_step float = 1e-9
-    statistics_interval float = 0.01
-    first_snapshot float = 0
-    snapshot_interval float = 0
-    timestep_criterion int = 0
+    maximum_step = 0.005
+    minimum_step = 1e-9
+    statistics_interval = 0.01
+    first_snapshot = 0
+    snapshot_interval = 0
+    timestep_criterion = 0
 
 cosmology : cosmology_settings
   matter_density = 0.3089
@@ -97,12 +96,16 @@ gravity : gravity_settings
     top_node_factor = 2.5
     active_fraction = 0.01
   softenings
-    comoving list
-    comoving[] float = 6 arepo_length
-    comoving[] float = 6 arepo_length
-    physical_maximum list
-    physical_maximum[] float = 3 arepo_length
-    physical_maximum[] float = 3 arepo_length
+    comoving list : gravity_softening_length
+    comoving[]
+      length = 6 arepo_length
+    comoving[]
+      length = 6 arepo_length
+    physical_maximum list : gravity_softening_length
+    physical_maximum[]
+      length = 3 arepo_length
+    physical_maximum[]
+      length = 3 arepo_length
     particle_type_map int[6] = [0,1,1,1,1,1]
   hydro
     gas_softening_factor = 2.5

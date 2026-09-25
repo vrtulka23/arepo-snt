@@ -1,0 +1,16 @@
+# Reusable Arepo initial-condition input contract.
+$schema initial_conditions_settings
+  path str
+    ?descr "Initial-condition file path, without an automatically appended format suffix."
+    ?url "https://arepo-code.org/wp-content/userguide/parameterfile.html"
+  format int
+    !options [
+      1, # traditional GADGET-style unformatted binary
+      2, # GADGET-style binary with four-character block identifiers
+      3  # HDF5 (Arepo-recommended format)
+    ]
+    ?descr "Serialization format used to read the initial conditions."
+    ?url "https://arepo-code.org/wp-content/userguide/parameterfile.html"
+
+$schema input_settings
+  initial_conditions : initial_conditions_settings

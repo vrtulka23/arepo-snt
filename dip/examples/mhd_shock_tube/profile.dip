@@ -2,7 +2,11 @@
 experiment
   setup
     kind str = "mhd_shock_tube"
-      !options ["cosmological_star_formation","cosmological_gravity_only","mhd_shock_tube"]
+      !options [
+        "cosmological_star_formation", # cosmological gas, cooling, and star formation
+        "cosmological_gravity_only",    # collisionless cosmological TreePM volume
+        "mhd_shock_tube"                 # one-dimensional ideal-MHD shock tube
+      ]
 
 build : arepo_build
   boundaries
@@ -38,51 +42,50 @@ build : arepo_build
   diagnostics
     debug = true
 
-input
+input : input_settings
   initial_conditions
-    path str = "./IC"
-    format int = 3
-      !options [1,2,3]
+    path = "./IC"
+    format = 3
 
-output
+output : output_settings
   schedule
-    enabled bool = false
-    filename str = "ol"
-  snapshots : snapshot_settings
+    enabled = false
+    filename = "ol"
+  snapshots
     directory = "./output"
     base_name = "snap"
     format = 3
     files = 1
     parallel_files = 1
 
-resources
+resources : resources_settings
   memory
-    per_rank int = 2500
+    per_rank = 2500
   wall_clock
-    limit float = 90000 s
-    restart_interval float = 9000 s
-    log_flush_interval float = 0 s
+    limit = 90000 s
+    restart_interval = 9000 s
+    log_flush_interval = 0 s
   execution
-    resubmit bool = false
-    resubmit_command str = "my-scriptfile"
+    resubmit = false
+    resubmit_command = "my-scriptfile"
 
-simulation
+simulation : simulation_settings
   domain
-    boundary str = "periodic"
+    boundary = "periodic"
     box
-      size float = 2.5 arepo_length
+      size = 2.5 arepo_length
   time
-    coordinate str = "linear"
-    initial_redshift float = 0
-    final_redshift float = 0
-    begin float = 0
-    end float = 0.4
-    maximum_step float = 0.1
-    minimum_step float = 1e-10
-    statistics_interval float = 0.005
-    first_snapshot float = 0
-    snapshot_interval float = 0.4
-    timestep_criterion int = 1
+    coordinate = "linear"
+    initial_redshift = 0
+    final_redshift = 0
+    begin = 0
+    end = 0.4
+    maximum_step = 0.1
+    minimum_step = 1e-10
+    statistics_interval = 0.005
+    first_snapshot = 0
+    snapshot_interval = 0.4
+    timestep_criterion = 1
 
 cosmology : cosmology_settings
   matter_density = 0
@@ -104,20 +107,32 @@ gravity : gravity_settings
     top_node_factor = 4
     active_fraction = 0.5
   softenings
-    comoving list
-    comoving[] float = 0.1 arepo_length
-    comoving[] float = 0.1 arepo_length
-    comoving[] float = 0.1 arepo_length
-    comoving[] float = 0.1 arepo_length
-    comoving[] float = 0.1 arepo_length
-    comoving[] float = 0.1 arepo_length
-    physical_maximum list
-    physical_maximum[] float = 0.1 arepo_length
-    physical_maximum[] float = 0.1 arepo_length
-    physical_maximum[] float = 0.1 arepo_length
-    physical_maximum[] float = 0.1 arepo_length
-    physical_maximum[] float = 0.1 arepo_length
-    physical_maximum[] float = 0.1 arepo_length
+    comoving list : gravity_softening_length
+    comoving[]
+      length = 0.1 arepo_length
+    comoving[]
+      length = 0.1 arepo_length
+    comoving[]
+      length = 0.1 arepo_length
+    comoving[]
+      length = 0.1 arepo_length
+    comoving[]
+      length = 0.1 arepo_length
+    comoving[]
+      length = 0.1 arepo_length
+    physical_maximum list : gravity_softening_length
+    physical_maximum[]
+      length = 0.1 arepo_length
+    physical_maximum[]
+      length = 0.1 arepo_length
+    physical_maximum[]
+      length = 0.1 arepo_length
+    physical_maximum[]
+      length = 0.1 arepo_length
+    physical_maximum[]
+      length = 0.1 arepo_length
+    physical_maximum[]
+      length = 0.1 arepo_length
     particle_type_map int[6] = [0,0,0,0,0,0]
   hydro
     gas_softening_factor = 0.01

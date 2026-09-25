@@ -1,0 +1,33 @@
+# Reusable execution-resource contract for an Arepo run.
+$schema memory_resources
+  per_rank int
+    !condition ({.} > 0)
+    ?descr "Memory allocated to each MPI rank, in MiB."
+    ?url "https://arepo-code.org/wp-content/userguide/parameterfile.html"
+
+$schema wall_clock_resources
+  limit float s
+    !condition ({.} > 0 s)
+    ?descr "Wall-clock limit before Arepo stops cleanly for restart."
+    ?url "https://arepo-code.org/wp-content/userguide/parameterfile.html"
+  restart_interval float s
+    !condition ({.} >= 0 s)
+    ?descr "Interval between restart-file writes."
+    ?url "https://arepo-code.org/wp-content/userguide/parameterfile.html"
+  log_flush_interval float s
+    !condition ({.} >= 0 s)
+    ?descr "Interval between explicit log-file flushes; zero leaves this disabled."
+    ?url "https://arepo-code.org/wp-content/userguide/parameterfile.html"
+
+$schema execution_resources
+  resubmit bool = false
+    ?descr "Whether Arepo should submit a continuation job after reaching its time limit."
+    ?url "https://arepo-code.org/wp-content/userguide/parameterfile.html"
+  resubmit_command str
+    ?descr "Command used to submit the continuation job when resubmission is enabled."
+    ?url "https://arepo-code.org/wp-content/userguide/parameterfile.html"
+
+$schema resources_settings
+  memory : memory_resources
+  wall_clock : wall_clock_resources
+  execution : execution_resources

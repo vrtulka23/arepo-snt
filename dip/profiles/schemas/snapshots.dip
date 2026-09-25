@@ -7,7 +7,11 @@ $schema snapshot_settings
     ?descr "Prefix used for snapshot filenames."
     ?url "https://arepo-code.org/wp-content/userguide/parameterfile.html"
   format int
-    !options [1,2,3]
+    !options [
+      1, # traditional GADGET-style unformatted binary
+      2, # GADGET-style binary with four-character block identifiers
+      3  # HDF5 (Arepo-recommended format)
+    ]
     ?descr "Arepo snapshot serialization format."
     ?url "https://arepo-code.org/wp-content/userguide/parameterfile.html"
   files int
