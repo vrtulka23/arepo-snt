@@ -6,29 +6,61 @@ $schema mesh_regularization
   shaping_speed float = 0.5
     !condition ({.} >= 0)
     ?descr "Speed of mesh regularization."
+    ?native "CellShapingSpeed"
+    ?performance_impact "Controls the strength of mesh-generator motion used to restore cell roundness."
+    ?category "mesh regularization"
 
   maximum_face_angle_factor float = 2.25
     !condition ({.} > 0)
     ?descr "Maximum-face-angle roundness threshold."
+    ?native "CellMaxAngleFactor"
+    ?requires "build.mesh.face_angle_regularization"
+    ?conflicts "build.geometry.static_mesh"
+    ?scientific_impact "Elongated cells above the face-angle thresholds are not refined and their mesh generators are moved away from pure Lagrangian motion."
+    ?category "mesh regularization"
+    ?visibility "advanced"
 
   shaping_factor float = 1
     !condition ({.} >= 0)
     ?descr "Centre-of-mass mesh-roundness threshold; zero disables this criterion."
+    ?native "CellShapingFactor"
+    ?conflicts ["build.geometry.static_mesh", "build.mesh.face_angle_regularization"]
+    ?scientific_impact "Large centre-of-mass offsets suppress refinement and add mesh-generator motion to restore roundness."
+    ?category "mesh regularization"
+    ?visibility "advanced"
 
 $schema mesh_refinement
 
   reference_gas_mass float = 0 arepo_mass
     ?descr "Reference gas-cell mass for refinement."
+    ?native "ReferenceGasPartMass"
+    ?requires "build.mesh.refinement"
+    ?scientific_impact "Defines the mass scale around which the default refinement and derefinement maintain gas-cell resolution."
+    ?category "mesh refinement"
 
   target_gas_mass_factor float = 1
     !condition ({.} > 0)
     ?descr "Target gas-mass multiplier for refinement."
+    ?native "TargetGasMassFactor"
+    ?requires "build.mesh.refinement"
+    ?scientific_impact "Scales the reference gas-cell mass used by the refinement target."
+    ?category "mesh refinement"
 
   refinement_criterion int = 1
     ?descr "Arepo refinement-criterion selector."
+    ?native "RefinementCriterion"
+    ?requires "build.mesh.refinement"
+    ?scientific_impact "Selects the algorithm governing when gas cells are refined."
+    ?category "mesh refinement"
+    ?visibility "advanced"
 
   derefinement_criterion int = 1
     ?descr "Arepo derefinement-criterion selector."
+    ?native "DerefinementCriterion"
+    ?requires "build.mesh.refinement"
+    ?scientific_impact "Selects the algorithm governing when gas cells are derefined."
+    ?category "mesh refinement"
+    ?visibility "advanced"
 
 $schema mesh_settings
 

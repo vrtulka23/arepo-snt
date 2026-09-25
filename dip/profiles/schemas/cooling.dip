@@ -1,0 +1,11 @@
+# Reusable runtime cooling contract. Profiles instantiate it only when the
+# COOLING build capability is selected.
+# Arepo runtime parameter reference:
+# https://arepo-code.org/wp-content/userguide/parameterfile.html
+$schema cooling_settings
+
+  uv_background_file str
+    ?descr "Cooling and UV-background table used by Arepo."
+    ?native "TreecoolFile"
+    ?requires "build.physics.cooling"
+    ?category "radiative cooling"

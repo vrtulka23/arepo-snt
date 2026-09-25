@@ -34,8 +34,9 @@ In particular, every profile instantiates the shared `arepo_build` schema in
 input/output, resource, and simulation schemas retain Arepo parameter-file
 documentation and options; profiles supply only values that vary.
 `arepo_build` is the compile-capability contract: profiles assign
-only the flags and values that differ from safe defaults, while `catalog.py`
-continues to own the translation to native Arepo names.
+only the flags and values that differ from safe defaults. Each DIPL value's
+`?native` metadata owns its translation to the corresponding Arepo name;
+`catalog.py` retains only rendering policy such as output target and units.
 Compile-only features are direct boolean nodes (for example,
 `build.physics.cooling`), not `enabled` subnodes. DIPL value nodes may have
 children, so features with associated settings nest them under the boolean
@@ -70,7 +71,8 @@ table, is available as a third setup:
 PYTHONPATH=src python3 -m arepo_dipl generate --setup cosmological_gravity_only --output generated/gravity-only
 ```
 
-`catalog.py` is deliberately the one place containing native Arepo names.
-Its entries are keyed by semantic DIPL fully-qualified paths.  `inventory.py`
-also scans the untouched Arepo `Template-Config.sh` and `src/io/parameters.c`
-so catalog coverage can be audited as Arepo evolves.
+`catalog.py` is deliberately free of ordinary native Arepo names. Its render
+rules are keyed by semantic DIPL fully-qualified paths, and resolve names from
+the parsed nodes' `?native` metadata. `inventory.py` also scans the untouched
+Arepo `Template-Config.sh` and `src/io/parameters.c` so coverage can be
+audited as Arepo evolves.

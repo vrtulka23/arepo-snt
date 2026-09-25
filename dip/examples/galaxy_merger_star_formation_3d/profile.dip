@@ -83,17 +83,22 @@ mesh
   refinement
     reference_gas_mass = 9.76211e-5 arepo_mass
     mean_volume float = 66800.2 arepo_length3
+      ?native "MeanVolume"
     maximum_volume_difference float = 10
+      ?native "MaxVolumeDiff"
     minimum_volume float = 1 arepo_length3
+      ?native "MinVolume"
     maximum_volume float = 1e9 arepo_length3
-cooling
-  uv_background_file str = "./TREECOOL_ep"
-star_formation
-  critical_overdensity float = 57.7
-  temperature_threshold float = 1e6 K
-  critical_physical_density float = 0 kg/m3
-  supernova_temperature float = 5.73e7 K
-  cloud_temperature float = 1000 K
-  maximum_timescale float = 2.27 arepo_time
-  supernova_factor float = 0.1
-  evaporation_factor float = 573
+      ?native "MaxVolume"
+cooling : cooling_settings
+  uv_background_file = "./TREECOOL_ep"
+
+star_formation : star_formation_settings
+  critical_overdensity = 57.7
+  temperature_threshold = 1e6 K
+  critical_physical_density = 0 kg/m3
+  supernova_temperature = 5.73e7 K
+  cloud_temperature = 1000 K
+  maximum_timescale = 2.27 arepo_time
+  supernova_factor = 0.1
+  evaporation_factor = 573

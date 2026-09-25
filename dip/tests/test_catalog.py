@@ -4,7 +4,7 @@ import unittest
 
 sys.path.insert(0, str(Path(__file__).parents[1] / "src"))
 
-from arepo_dipl.catalog import CONFIG, PARAMETERS
+from arepo_dipl.catalog import CONFIG, PARAMETERS, RenderRule
 from arepo_dipl.inventory import runtime_tags, template_flags
 
 
@@ -12,17 +12,13 @@ ROOT = Path(__file__).parents[2]
 
 
 class CatalogTests(unittest.TestCase):
-    def test_selected_native_names_are_unique_per_target(self):
-        for entries in (CONFIG, PARAMETERS):
-            for index, entry in enumerate(entries):
-                for other in entries[index + 1 :]:
-                    if entry.native != other.native:
-                        continue
-                    # A setup-specific mapping may reuse a native name only
-                    # when the two setup branches cannot be active together.
-                    self.assertIsNotNone(entry.setup)
-                    self.assertIsNotNone(other.setup)
-                    self.assertNotEqual(entry.setup, other.setup)
+    def test_render_rules_do_not_duplicate_native_names(self):
+        for rule in (*CONFIG, *PARAMETERS):
+            self.assertIsInstance(rule, RenderRule)
+            self.assertFalse(hasattr(rule, "native"))
+        generator = (ROOT / "dip" / "src" / "arepo_dipl" / "generator.py").read_text()
+        self.assertIn("metadata.native", generator)
+        self.assertIn("has no `?native` metadata", generator)
 
     def test_arepo_inventory_is_readable(self):
         self.assertIn("COOLING", template_flags(ROOT))
@@ -77,6 +73,8 @@ class CatalogTests(unittest.TestCase):
         self.assertTrue((schemas / "cosmology.dip").is_file())
         self.assertTrue((schemas / "experiment.dip").is_file())
         self.assertTrue((schemas / "analysis.dip").is_file())
+        self.assertTrue((schemas / "cooling.dip").is_file())
+        self.assertTrue((schemas / "star_formation.dip").is_file())
         self.assertTrue((schemas / "snapshots.dip").is_file())
         self.assertTrue((schemas / "input.dip").is_file())
         self.assertTrue((schemas / "output.dip").is_file())

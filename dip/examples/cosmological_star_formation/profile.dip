@@ -162,23 +162,18 @@ mesh
     refinement_criterion = 1
     derefinement_criterion = 1
 
-cooling
-  enabled_at_runtime bool = true
-    !condition ({.} == {?build.physics.cooling})
-  uv_background_file str = "./TREECOOL_ep"
-    ?descr "Cooling and UV-background table used by Arepo."
+cooling : cooling_settings
+  uv_background_file = "./TREECOOL_ep"
 
-star_formation
-  enabled_at_runtime bool = true
-    !condition ({.} == {?build.physics.star_formation})
-  critical_overdensity float = 57.7
-  temperature_threshold float = 1e6 K
-  critical_physical_density float = 0 kg/m3
-  supernova_temperature float = 5.73e7 K
-  cloud_temperature float = 1000 K
-  maximum_timescale float = 2.27 arepo_time
-  supernova_factor float = 0.1
-  evaporation_factor float = 573
+star_formation : star_formation_settings
+  critical_overdensity = 57.7
+  temperature_threshold = 1e6 K
+  critical_physical_density = 0 kg/m3
+  supernova_temperature = 5.73e7 K
+  cloud_temperature = 1000 K
+  maximum_timescale = 2.27 arepo_time
+  supernova_factor = 0.1
+  evaporation_factor = 573
 
 analysis : analysis_settings
   subfind

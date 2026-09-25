@@ -7,10 +7,14 @@ $schema subfind_analysis_settings
   linking_neighbors int
     !condition ({.} > 0)
     ?descr "Minimum number of particles/cells retained in a Subfind group."
+    ?native "DesLinkNgb"
+    ?requires "build.analysis.subfind"
 
   opening_angle float
     !condition ({.} > 0)
     ?descr "Subfind tree opening angle."
+    ?native "ErrTolThetaSubfind"
+    ?requires "build.analysis.subfind"
 
 $schema analysis_settings
 
