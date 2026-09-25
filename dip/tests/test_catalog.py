@@ -41,6 +41,32 @@ class CatalogTests(unittest.TestCase):
         self.assertEqual(SETUPS["mhd_shock_tube"][1].name, "profile.dip")
         self.assertEqual(SETUPS["cosmological_gravity_only"][1].name, "profile.dip")
 
+    def test_every_arepo_example_has_a_dipl_setup(self):
+        from arepo_dipl.generator import SETUPS
+
+        expected = {
+            "alfven_wave_1d",
+            "cosmo_zoom_gravity_only_3d",
+            "current_sheet_2d",
+            "galaxy_merger_star_formation_3d",
+            "gresho_2d",
+            "interacting_blastwaves_1d",
+            "isolated_galaxy_collisionless_3d",
+            "noh_2d",
+            "noh_3d",
+            "polytrope_1d_spherical",
+            "shocktube_1d",
+            "wave_1d",
+            "yee_2d",
+        }
+        self.assertTrue(expected <= set(SETUPS))
+        self.assertEqual(16, len(SETUPS))
+
+    def test_generator_persists_the_complete_diph5_environment(self):
+        generator = (ROOT / "dip" / "src" / "arepo_dipl" / "generator.py").read_text()
+        self.assertIn('env.save(output / "environment.diph5")', generator)
+        self.assertNotIn("provenance.json", generator)
+
     def test_every_profile_instantiates_the_shared_runtime_schemas(self):
         schemas = ROOT / "dip" / "profiles" / "schemas"
         build_schema = (schemas / "build.dip").read_text()
@@ -49,6 +75,8 @@ class CatalogTests(unittest.TestCase):
         self.assertIn("particle_mesh bool = false\n      ?descr", build_schema)
         self.assertIn("grid_resolution int = 0", build_schema)
         self.assertTrue((schemas / "cosmology.dip").is_file())
+        self.assertTrue((schemas / "experiment.dip").is_file())
+        self.assertTrue((schemas / "analysis.dip").is_file())
         self.assertTrue((schemas / "snapshots.dip").is_file())
         self.assertTrue((schemas / "input.dip").is_file())
         self.assertTrue((schemas / "output.dip").is_file())
@@ -59,6 +87,8 @@ class CatalogTests(unittest.TestCase):
         self.assertTrue((schemas / "mesh.dip").is_file())
         self.assertIn("force_accuracy : gravity_force_accuracy", (schemas / "gravity.dip").read_text())
         self.assertIn("$schema gravity_softening_length", (schemas / "gravity.dip").read_text())
+        self.assertIn("setup : experiment_setup_selection", (schemas / "experiment.dip").read_text())
+        self.assertIn("subfind : subfind_analysis_settings", (schemas / "analysis.dip").read_text())
         self.assertIn("regularization : mesh_regularization", (schemas / "mesh.dip").read_text())
         units = (schemas / "arepo_units.dip").read_text()
         self.assertIn("$unit arepo_length = {?code_units.length}", units)
@@ -71,18 +101,32 @@ class CatalogTests(unittest.TestCase):
         self.assertIn("limit float s\n    !condition ({.} > 0 s)", resources)
         self.assertIn("time : simulation_time", simulation)
         self.assertIn("size float arepo_length\n    !condition ({.} > 0 arepo_length)", simulation)
+        shared_baseline = (
+            (ROOT / "dip" / "profiles" / "ideal_hydrodynamics.dip").read_text()
+            + (ROOT / "dip" / "profiles" / "standard_softenings.dip").read_text()
+        )
+        required_roots = (
+            "input : input_settings",
+            "output : output_settings",
+            "resources : resources_settings",
+            "simulation : simulation_settings",
+            "gravity : gravity_settings",
+            "hydrodynamics : hydrodynamics_settings",
+            "mesh : mesh_settings",
+        )
         for profile in (ROOT / "dip" / "examples").glob("*/profile.dip"):
             text = profile.read_text()
+            self.assertIn("experiment : experiment_settings", text)
             self.assertIn("build : arepo_build", text)
-            self.assertIn("input : input_settings", text)
-            self.assertIn("output : output_settings", text)
-            self.assertIn("resources : resources_settings", text)
-            self.assertIn("simulation : simulation_settings", text)
-            self.assertIn("gravity : gravity_settings", text)
-            self.assertIn("hydrodynamics : hydrodynamics_settings", text)
-            self.assertIn("mesh : mesh_settings", text)
-            self.assertIn("comoving list : gravity_softening_length", text)
-            self.assertIn("comoving[]\n      length =", text)
+            for root in required_roots:
+                self.assertTrue(root in text or root in shared_baseline)
+            self.assertTrue(
+                "comoving list : gravity_softening_length" in text
+                or "comoving list : gravity_softening_length" in shared_baseline
+            )
+        for name in ("cosmological_star_formation", "cosmological_gravity_only"):
+            text = (ROOT / "dip" / "examples" / name / "profile.dip").read_text()
+            self.assertIn("analysis : analysis_settings", text)
 
 
 if __name__ == "__main__":

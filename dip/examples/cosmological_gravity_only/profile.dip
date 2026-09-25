@@ -1,14 +1,7 @@
 # Semantic counterpart of examples/cosmo_box_gravity_only_3d.
-experiment
+experiment : experiment_settings
   setup
-    kind str = "cosmological_gravity_only"
-      !options [
-        "cosmological_star_formation", # cosmological gas, cooling, and star formation
-        "cosmological_gravity_only",    # collisionless cosmological TreePM volume
-        "mhd_shock_tube"                 # one-dimensional ideal-MHD shock tube
-      ]
-      ?descr "A periodic cosmological volume with collisionless TreePM gravity."
-      ?url "https://arepo-code.org/wp-content/userguide/simtypes.html"
+    kind = "cosmological_gravity_only"
 
 build : arepo_build
   physics
@@ -153,9 +146,7 @@ mesh : mesh_settings
     shaping_speed = 0.5
     shaping_factor = 1.0
 
-analysis
+analysis : analysis_settings
   subfind
-    linking_neighbors int = 20
-      ?descr "Minimum number of particles/cells retained in a Subfind group."
-    opening_angle float = 0.7
-      ?descr "Subfind tree opening angle."
+    linking_neighbors = 20
+    opening_angle = 0.7

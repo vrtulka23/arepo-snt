@@ -1,0 +1,39 @@
+# Semantic counterpart of examples/polytrope_1d_spherical.
+experiment : experiment_settings
+  setup
+    kind = "polytrope_1d_spherical"
+build : arepo_build
+  geometry
+    one_dimensional = true
+    spherical_one_dimensional = true
+    static_mesh = true
+  physics
+    adiabatic_index = 2
+  gravity
+    self_gravity = true
+  time
+    force_equal_timesteps = true
+  precision
+    mode = 1
+  io
+    input_double_precision = true
+    output_double_precision = true
+    read_mass_as_density = true
+    hdf5 = true
+  output
+    acceleration = true
+    pressure_gradient = true
+  diagnostics
+    debug = true
+simulation
+  time
+    maximum_step = 0.125
+    statistics_interval = 1
+    snapshot_interval = 0.125
+hydrodynamics
+  target_neighbors = 32
+gravity
+  constant_internal = 1
+polytrope
+  core_radius float = 0.1 arepo_length
+  core_mass float = 4.12455e-3 arepo_mass

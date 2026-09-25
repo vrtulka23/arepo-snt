@@ -1,15 +1,19 @@
 # Reusable cosmological background contract for Arepo profiles.
+# Arepo runtime parameter reference:
+# https://arepo-code.org/wp-content/userguide/parameterfile.html
 $schema cosmology_settings
+
   matter_density float
     ?descr "Present-day total matter density parameter, Omega0."
-    ?url "https://arepo-code.org/wp-content/userguide/parameterfile.html"
+
   baryon_density float
     ?descr "Present-day baryon density parameter, OmegaBaryon."
-    ?url "https://arepo-code.org/wp-content/userguide/parameterfile.html"
+
   hubble_parameter float
     ?descr "Dimensionless Hubble parameter h, written to HubbleParam."
-    ?url "https://arepo-code.org/wp-content/userguide/parameterfile.html"
+
   initial_redshift float
     ?descr "Initial redshift from which the scale-factor start time is derived."
+
   final_redshift float
     ?descr "Final redshift from which the scale-factor end time is derived."

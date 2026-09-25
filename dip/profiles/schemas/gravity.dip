@@ -1,15 +1,18 @@
 # Reusable runtime gravity contracts. Softening lists remain profile-owned:
 # their lengths depend on the selected number of compiled softening types.
+# Arepo runtime parameter reference:
+# https://arepo-code.org/wp-content/userguide/parameterfile.html
 $schema gravity_force_accuracy
+
   integration float = 0.012
     ?descr "Integration accuracy tolerance."
-    ?url "https://arepo-code.org/wp-content/userguide/parameterfile.html"
+
   opening_angle float = 0.7
     ?descr "Tree opening angle."
-    ?url "https://arepo-code.org/wp-content/userguide/parameterfile.html"
+
   relative_force float = 0.0025
     ?descr "Relative force-error tolerance."
-    ?url "https://arepo-code.org/wp-content/userguide/parameterfile.html"
+
   opening_criterion int = 1
     !options [
       0, # geometric Barnes-Hut opening criterion
@@ -18,22 +21,28 @@ $schema gravity_force_accuracy
     ?descr "Tree opening-criterion selector."
 
 $schema gravity_domain_decomposition
+
   multiple_domains int = 1
     !condition ({.} >= 1)
     ?descr "Number of simultaneous domain decompositions."
+
   top_node_factor float = 2.5
     !condition ({.} > 0)
     ?descr "Top-level tree-node allocation factor."
+
   active_fraction float = 0.01
     !condition ({.} >= 0)
     ?descr "Active-particle fraction that triggers a domain decomposition."
 
 $schema gravity_hydro_softening
+
   gas_softening_factor float = 1
     !condition ({.} > 0)
     ?descr "Gas-cell softening relative to the assigned base softening."
+
   minimum_comoving float = 0 arepo_length
     ?descr "Minimum comoving adaptive gas softening."
+
   spacing float = 1
     !condition ({.} >= 1)
     ?descr "Geometric spacing between adaptive gas softening levels."
@@ -41,12 +50,16 @@ $schema gravity_hydro_softening
 # A DIPL collection item is a container. Its scalar softening length therefore
 # belongs to this named child instead of being stored on the item itself.
 $schema gravity_softening_length
-  length float arepo_length
+
+  length float = 0.1 arepo_length
     !condition ({.} > 0 arepo_length)
-    ?descr "Gravity softening length in Arepo code-length units."
-    ?url "https://arepo-code.org/wp-content/userguide/parameterfile.html"
+    ?descr "Gravity softening length in Arepo code-length units; the schema default is overridden by each setup."
 
 $schema gravity_settings
+
+  constant_internal float = 0
+    ?descr "Gravitational constant in the selected internal code-unit system."
+
   force_accuracy : gravity_force_accuracy
   domain_decomposition : gravity_domain_decomposition
   hydro : gravity_hydro_softening

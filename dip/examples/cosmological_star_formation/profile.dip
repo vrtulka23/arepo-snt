@@ -1,31 +1,56 @@
 # The active setup is deliberately declared before feature-gated runtime data.
-experiment
+experiment : experiment_settings
   setup
-    kind str = "cosmological_star_formation"
-      !options [
-        "cosmological_star_formation", # cosmological gas, cooling, and star formation
-        "cosmological_gravity_only",    # collisionless cosmological TreePM volume
-        "mhd_shock_tube"                 # one-dimensional ideal-MHD shock tube
-      ]
-      ?descr "Selects the scientific setup branch."
-      ?url "https://arepo-code.org/wp-content/userguide/examples.html"
+    kind = "cosmological_star_formation"
 
 build : arepo_build
   physics
     cooling = true
     star_formation = true
+    jeans_cell_stability = true
   gravity
     self_gravity = true
+    hierarchical = true
+    cell_center_evaluation = true
+    direct_summation = true
+      threshold = 500
+    multiple_node_softening = true
+    individual_softening_type_mask = 32
     particle_mesh = true
       grid_resolution = 256
+      short_range_cutoff = 5.0
     softening_types = 2
+  time
+    tree_based_timesteps = true
+  precision
+    mode = 1
+    fftw_double = true
+    neighbor_tree_double = true
   io
     hdf5 = true
     reduced_flush = true
+    output_coordinates_double = true
+    cpu_csv = true
+  initial_conditions
+    generate_gas_from_dark_matter = true
   mesh
     face_angle_regularization = true
     refinement = true
     adaptive_hydro_softening = true
+    center_of_mass_drift = true
+    drift_limited_by_sound_speed = true
+  analysis
+    fof = true
+      primary_link_type_mask = 2
+      secondary_link_type_mask = 49
+    subfind = true
+      save_density_estimates = true
+      calculate_velocity_dispersion = true
+      extended_properties = true
+  output
+    process_schedule_exactly = true
+  diagnostics
+    debug = true
 
 input : input_settings
   initial_conditions
@@ -154,6 +179,11 @@ star_formation
   maximum_timescale float = 2.27 arepo_time
   supernova_factor float = 0.1
   evaporation_factor float = 573
+
+analysis : analysis_settings
+  subfind
+    linking_neighbors = 20
+    opening_angle = 0.7
 
 # Future alternate setup branches are kept separate from this active profile.
 @if false

@@ -1,68 +1,72 @@
 # Reusable spatial-domain and integration-time contract.
+# Arepo runtime parameter reference:
+# https://arepo-code.org/wp-content/userguide/parameterfile.html
 $schema simulation_box
+
   size float arepo_length
     !condition ({.} > 0 arepo_length)
     ?descr "Simulation-box edge length in the selected Arepo code-length unit."
-    ?url "https://arepo-code.org/wp-content/userguide/parameterfile.html"
 
 $schema simulation_domain
+
   boundary str
     !options [
       "periodic",     # periodic domain boundaries
       "non_periodic"  # non-periodic domain boundaries
     ]
     ?descr "Whether the simulation domain has periodic boundaries."
-    ?url "https://arepo-code.org/wp-content/userguide/parameterfile.html"
+
   box : simulation_box
 
 $schema simulation_time
+
   coordinate str
     !options [
       "scale_factor", # cosmological integration using scale factor
       "linear"        # non-cosmological integration using linear time
     ]
     ?descr "Independent coordinate used by the time integrator."
-    ?url "https://arepo-code.org/wp-content/userguide/parameterfile.html"
+
   initial_redshift float
     ?descr "Redshift represented by the initial conditions."
-    ?url "https://arepo-code.org/wp-content/userguide/parameterfile.html"
+
   final_redshift float
     ?descr "Redshift at which a cosmological integration ends."
-    ?url "https://arepo-code.org/wp-content/userguide/parameterfile.html"
+
   begin float
     ?descr "Initial integration coordinate; often derived from the initial redshift."
-    ?url "https://arepo-code.org/wp-content/userguide/parameterfile.html"
+
   end float
     !condition ({.} >= {?simulation.time.begin})
     ?descr "Final integration coordinate."
-    ?url "https://arepo-code.org/wp-content/userguide/parameterfile.html"
+
   maximum_step float
     !condition ({.} > 0)
     ?descr "Maximum permitted integration step."
-    ?url "https://arepo-code.org/wp-content/userguide/parameterfile.html"
+
   minimum_step float
-    !condition ({.} > 0)
-    ?descr "Minimum permitted integration step."
-    ?url "https://arepo-code.org/wp-content/userguide/parameterfile.html"
+    !condition ({.} >= 0)
+    ?descr "Minimum permitted integration step; zero delegates the lower limit to Arepo."
+
   statistics_interval float
     !condition ({.} >= 0)
     ?descr "Interval between time-statistics reports."
-    ?url "https://arepo-code.org/wp-content/userguide/parameterfile.html"
+
   first_snapshot float
     ?descr "First regularly spaced snapshot time when no output schedule is used."
-    ?url "https://arepo-code.org/wp-content/userguide/parameterfile.html"
+
   snapshot_interval float
     !condition ({.} >= 0)
     ?descr "Spacing of regular snapshots when no output schedule is used."
-    ?url "https://arepo-code.org/wp-content/userguide/parameterfile.html"
+
   timestep_criterion int
     !options [
       0, # displacement-based criterion
       1  # acceleration-based criterion
     ]
     ?descr "Global time-step criterion used by Arepo."
-    ?url "https://arepo-code.org/wp-content/userguide/parameterfile.html"
 
 $schema simulation_settings
+
   domain : simulation_domain
   time : simulation_time

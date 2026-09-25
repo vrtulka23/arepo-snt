@@ -1,12 +1,7 @@
 # Semantic counterpart of examples/mhd_shocktube_1d.
-experiment
+experiment : experiment_settings
   setup
-    kind str = "mhd_shock_tube"
-      !options [
-        "cosmological_star_formation", # cosmological gas, cooling, and star formation
-        "cosmological_gravity_only",    # collisionless cosmological TreePM volume
-        "mhd_shock_tube"                 # one-dimensional ideal-MHD shock tube
-      ]
+    kind = "mhd_shock_tube"
 
 build : arepo_build
   boundaries
@@ -52,7 +47,7 @@ output : output_settings
     enabled = false
     filename = "ol"
   snapshots
-    directory = "./output"
+    directory = "./output/"
     base_name = "snap"
     format = 3
     files = 1

@@ -3,9 +3,10 @@
 This directory is a standalone, semantic configuration layer for Arepo.  It
 does not modify the Arepo source tree or the `snt3` link.
 
-Each setup declares three physical code bases. The two cosmological setups
-reuse `profiles/cosmological_units.dip`, while the MHD setup retains its
-distinct `examples/mhd_shock_tube/units.dip`. `profiles/schemas/arepo_units.dip`
+Each setup declares three physical code bases. Cosmological examples reuse
+`profiles/cosmological_units.dip`; the idealised examples reuse
+`profiles/standard_units.dip`; and the original MHD setup retains its distinct
+`examples/mhd_shock_tube/units.dip`. `profiles/schemas/arepo_units.dip`
 derives DIPL custom units named `arepo_length`, `arepo_mass`, and
 `arepo_velocity` by directly referencing those code bases with `$unit`, then
 declares derived units such as `arepo_time` and `arepo_density`. All code-space
@@ -14,7 +15,9 @@ settings in the profile use those units.
 The files are loaded in this order:
 
 1. the selected shared or example-local unit profile
-2. `profiles/schemas/` (reference-derived code units, input, output, resources, simulation, cosmology, snapshots, build, gravity, hydrodynamics, and mesh) and the selected `examples/<setup>/profile.dip`
+2. `profiles/schemas/`, the reusable `ideal_hydrodynamics.dip` and/or
+   `standard_softenings.dip` layers where appropriate, and the selected
+   `examples/<setup>/profile.dip`
 3. optional DIPL tables owned by that example
 4. `profiles/overrides.dip`
 
@@ -25,8 +28,9 @@ definitions or generated files.
 
 In particular, every profile instantiates the shared `arepo_build` schema in
 `profiles/schemas/build.dip`. The other shared contracts are split by concern:
-`input.dip`, `output.dip`, `resources.dip`, `simulation.dip`, `cosmology.dip`,
-`snapshots.dip`, `gravity.dip`, `hydrodynamics.dip`, and `mesh.dip`. The
+`experiment.dip`, `input.dip`, `output.dip`, `resources.dip`,
+`simulation.dip`, `cosmology.dip`, `snapshots.dip`, `analysis.dip`, `gravity.dip`,
+`hydrodynamics.dip`, and `mesh.dip`. The
 input/output, resource, and simulation schemas retain Arepo parameter-file
 documentation and options; profiles supply only values that vary.
 `arepo_build` is the compile-capability contract: profiles assign
@@ -45,14 +49,15 @@ Install/build SciNumTools3's Python bindings, then run:
 PYTHONPATH=src python3 -m arepo_dipl generate --output generated
 ```
 
-The command writes `Config.sh`, `param.txt`, `output_list.txt`, and
-`provenance.json` below the requested output directory. It uses Arepo-safe
-comments in the two native files and stores catalog provenance in JSON.
-DIPH5 2.2 can serialize the value-bearing groups and collection items used
-here, but it does not yet restore this project's custom `arepo_*` unit
-registry in a fresh process; it therefore cannot replace portable provenance.
+The command writes `Config.sh`, `param.txt`, `output_list.txt`, and a complete
+`environment.diph5` snapshot below the requested output directory. It uses
+Arepo-safe comments in the two native files. DIPH5 2.3 records evaluated
+values, units, node settings, source and trace provenance, custom-unit
+registrations, value-bearing groups, and collection-item data. The snapshot
+can be loaded in a fresh process without preloading the DIPL source files.
 
-Select the parallel 1D MHD shock-tube setup with:
+All sixteen Arepo examples with a bundled `Config.sh` and `param.txt` have a
+named setup. For example, select the parallel 1D MHD shock-tube setup with:
 
 ```bash
 PYTHONPATH=src python3 -m arepo_dipl generate --setup mhd_shock_tube --output generated/mhd
