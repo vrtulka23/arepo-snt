@@ -90,7 +90,7 @@ code[]
   file = "profile.dip"
 
 code[]
-  file = "../../profiles/overrides.dip"
+  file = "overrides.dip"
 
 code[]
   file = "../../profiles/native_controls.dip"

@@ -1,0 +1,17 @@
+# Local overrides for current_sheet_2d only.
+# User overrides are loaded after the selected setup.  Uncomment and adjust
+# only active, non-derived settings.  Derived nodes such as simulation.time.begin
+# and all arepo_* custom units intentionally have no override surface.
+#
+# simulation
+#   domain
+#     box
+#       size = 10000 arepo_length
+#
+# output
+#   snapshots
+#     files = 4
+#
+# hydrodynamics
+#   courant_factor = 0.25
+

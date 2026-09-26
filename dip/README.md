@@ -23,15 +23,17 @@ The files are loaded in this order:
    `standard_softenings.dip` layers where appropriate, and the selected
    `examples/<setup>/profile.dip`
 3. example-owned tables, imported by the profile from named manifest sources
-4. `profiles/overrides.dip`
+4. `examples/<setup>/overrides.dip`
 5. `profiles/native_controls.dip`, which derives native switches from the
    final overridden values
 6. example-owned `tables.dip`, where present, which imports scientific datasets
    and resolves their output filenames from the final settings
 
-`profiles/overrides.dip` is the user-editable overlay. Add ordinary DIPL
-modifications there; do not edit derived unit
+Each setup's `overrides.dip` is its user-editable overlay. Add ordinary DIPL
+modifications there; they affect only that setup. Do not edit derived unit
 definitions or generated files.
+Local overlays isolate experiments; they do not change DIPL's evaluation
+order or automatically recompute expressions already evaluated in a profile.
 
 In particular, every profile instantiates the shared `arepo_build` schema in
 `profiles/schemas/build.dip`. The other shared contracts are split by concern:
