@@ -1,8 +1,7 @@
-# Reusable runtime gravity contracts. Softening lists remain profile-owned:
-# their lengths depend on the selected number of compiled softening types.
-# Arepo runtime parameter reference:
-# https://arepo-code.org/wp-content/userguide/parameterfile.html
 $schema gravity_force_accuracy
+  ?descr "Gravity accuracy controls."
+  ?url "https://arepo-code.org/wp-content/userguide/parameterfile.html#gravitational-force-accuracy"
+  ?see ["https://arepo-code.org/wp-content/userguide/parameterfile.html#time-integration-accuracy"]
 
   integration float = 0.012
     ?descr "Integration accuracy tolerance."
@@ -43,6 +42,8 @@ $schema gravity_force_accuracy
     ?visibility "advanced"
 
 $schema gravity_domain_decomposition
+  ?descr "Domain decomposition controls."
+  ?url "https://arepo-code.org/wp-content/userguide/parameterfile.html#domain-decomposition"
 
   multiple_domains int = 1
     !condition ({.} >= 1)
@@ -72,6 +73,8 @@ $schema gravity_domain_decomposition
     ?visibility "advanced"
 
 $schema gravity_hydro_softening
+  ?descr "Adaptive gas softening settings."
+  ?url "https://arepo-code.org/wp-content/userguide/parameterfile.html#gravitational-softening"
 
   gas_softening_factor float = 1
     !condition ({.} > 0)
@@ -104,9 +107,10 @@ $schema gravity_hydro_softening
     export : arepo_export
       requires_enabled = ["build.mesh.adaptive_hydro_softening"]
 
-# A DIPL collection item is a container. Its scalar softening length therefore
-# belongs to this named child instead of being stored on the item itself.
 $schema gravity_softening_length
+  ?descr "One gravitational softening length."
+  ?url "https://arepo-code.org/wp-content/userguide/parameterfile.html#gravitational-softening"
+  ?rationale "DIPL collection items are containers, so the scalar length is represented by a named child."
 
   length float = 0.1 arepo_length
     !condition ({.} > 0 arepo_length)
@@ -116,6 +120,9 @@ $schema gravity_softening_length
     ?category "gravity softening"
 
 $schema gravity_settings
+  ?descr "Gravity and softening settings."
+  ?url "https://arepo-code.org/wp-content/userguide/parameterfile.html#gravitational-force-accuracy"
+  ?see ["https://arepo-code.org/wp-content/userguide/parameterfile.html#domain-decomposition", "https://arepo-code.org/wp-content/userguide/parameterfile.html#gravitational-softening", "https://arepo-code.org/wp-content/userguide/parameterfile.html#system-of-units"]
 
   constant_internal float = 0
     ?descr "Gravitational constant in the selected internal code-unit system."

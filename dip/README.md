@@ -42,6 +42,14 @@ In particular, every profile instantiates the shared `arepo_build` schema in
 `hydrodynamics.dip`, and `mesh.dip`. The
 input/output, resource, and simulation schemas retain Arepo parameter-file
 documentation and options; profiles supply only values that vary.
+Schema-level `?descr`, `?url`, and `?see` metadata identify the relevant
+official guide sections. They can be inspected after parsing through, for
+example, `env.schemas["subfind_analysis_settings"].metadata.url`. Schema
+metadata describes the reusable contract and remains separate from field
+metadata. The export policy is documented as local integration behavior;
+example selection uses local identifiers. Documentation links identify the
+source of native semantics, not authorship or endorsement of these schemas
+and their defaults.
 `arepo_build` is the compile-capability contract: profiles assign
 only the flags and values that differ from safe defaults. Each DIPL value's
 `?native` metadata owns its translation to the corresponding Arepo name;
@@ -61,7 +69,7 @@ Install/build SciNumTools3's Python bindings with `Environment.select()` and
 PYTHONPATH=src python3 -m arepo_dipl generate --output generated
 ```
 
-The command writes `Config.sh`, `param.txt`, `output_list.txt`, and a complete
+The command writes `Config.sh`, `param.txt`, and a complete
 `environment.diph5` snapshot below the requested output directory, together
 with the setup's imported scientific datasets in their original native file
 layouts. It uses
@@ -69,6 +77,13 @@ Arepo-safe comments in the two native files. DIPH5 2.3 records evaluated
 values, units, node settings, source and trace provenance, custom-unit
 registrations, value-bearing groups, and collection-item data. The snapshot
 can be loaded in a fresh process without preloading the DIPL source files.
+
+When output scheduling is enabled, the schedule is written to
+`output.schedule.filename`, relative to the generated output directory
+(`output_list.txt` in the supplied setups). Nested directories are created as
+needed. Paths outside that directory and collisions with other generated files
+are rejected. Disabled schedules do not create a schedule file; existing files
+from earlier generations are not removed automatically.
 
 All sixteen Arepo examples with a bundled `Config.sh` and `param.txt` have a
 named setup. For example, select the parallel 1D MHD shock-tube setup with:

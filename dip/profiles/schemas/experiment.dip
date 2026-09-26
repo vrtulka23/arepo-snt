@@ -1,5 +1,7 @@
-# Reusable scientific-setup selector for the Arepo showcase examples.
 $schema experiment_setup_selection
+  ?descr "Local selection of bundled AREPO examples."
+  ?url "https://arepo-code.org/wp-content/userguide/simtypes.html"
+  ?rationale "Schema organization and setup identifiers belong to this DIPL integration, not to the native AREPO parameter format."
 
   kind str
     !options [
@@ -21,8 +23,11 @@ $schema experiment_setup_selection
       "yee_2d"                         # two-dimensional Yee vortex
     ]
     ?descr "Selects the scientific setup branch represented by this DIPL environment."
-    ?url "https://arepo-code.org/wp-content/userguide/examples.html"
+    ?url "https://arepo-code.org/wp-content/userguide/simtypes.html"
 
 $schema experiment_settings
+  ?descr "Local experiment identity settings."
+  ?url "https://arepo-code.org/wp-content/userguide/simtypes.html"
+  ?rationale "Schema organization and setup identifiers belong to this DIPL integration, not to the native AREPO parameter format."
 
   setup : experiment_setup_selection

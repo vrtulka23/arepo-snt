@@ -1,7 +1,6 @@
-# Reusable Arepo snapshot-output contract.
-# Arepo runtime parameter reference:
-# https://arepo-code.org/wp-content/userguide/parameterfile.html
 $schema snapshot_settings
+  ?descr "Snapshot naming and storage."
+  ?url "https://arepo-code.org/wp-content/userguide/parameterfile.html#output-file-names-and-formats"
 
   directory str
     ?descr "Directory receiving Arepo snapshots."

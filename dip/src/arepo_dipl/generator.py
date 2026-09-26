@@ -96,18 +96,25 @@ def _render_schedule(env: Any) -> str:
 def generate(output: Path, setup: str = "cosmological_star_formation") -> Path:
     env = load_environment(setup)
     datasets = render_tables(env)
-    reserved = {"Config.sh", "param.txt", "output_list.txt", "environment.diph5"}
+    reserved = {"Config.sh", "param.txt", "environment.diph5"}
     destinations = {}
-    for filename, content in datasets.items():
+
+    def add_output(filename: str, content: str) -> None:
         destination = (output / filename).resolve()
         if (not destination.is_relative_to(output.resolve()) or destination == output.resolve()
                 or destination.name in reserved or destination in destinations):
-            raise GenerationError(f"Invalid or conflicting dataset output path `{filename}`.")
+            raise GenerationError(f"Invalid or conflicting output path `{filename}`.")
+        if any(destination in other.parents or other in destination.parents for other in destinations):
+            raise GenerationError(f"Conflicting file and directory output paths for `{filename}`.")
         destinations[destination] = content
+
+    if _value(env, "output.schedule.enabled"):
+        add_output(_value(env, "output.schedule.filename"), _render_schedule(env))
+    for filename, content in datasets.items():
+        add_output(filename, content)
     output.mkdir(parents=True, exist_ok=True)
     (output / "Config.sh").write_text(_render_config(env))
     (output / "param.txt").write_text(_render_parameters(env))
-    (output / "output_list.txt").write_text(_render_schedule(env))
     env.save(output / "environment.diph5")
     for destination, content in destinations.items():
         destination.parent.mkdir(parents=True, exist_ok=True)

@@ -1,7 +1,6 @@
-# Reusable spatial-domain and integration-time contract.
-# Arepo runtime parameter reference:
-# https://arepo-code.org/wp-content/userguide/parameterfile.html
 $schema simulation_box
+  ?descr "Computational box size."
+  ?url "https://arepo-code.org/wp-content/userguide/parameterfile.html#simulated-time-span-and-spatial-extent"
 
   size float arepo_length
     !condition ({.} > 0 arepo_length)
@@ -12,6 +11,8 @@ $schema simulation_box
     ?category "simulation domain"
 
 $schema simulation_domain
+  ?descr "Domain extent and boundaries."
+  ?url "https://arepo-code.org/wp-content/userguide/parameterfile.html#simulated-time-span-and-spatial-extent"
 
   boundary str
     !options [
@@ -27,6 +28,9 @@ $schema simulation_domain
   box : simulation_box
 
 $schema simulation_time
+  ?descr "Integration interval and output cadence."
+  ?url "https://arepo-code.org/wp-content/userguide/parameterfile.html#simulated-time-span-and-spatial-extent"
+  ?see ["https://arepo-code.org/wp-content/userguide/parameterfile.html#cosmological-parameters", "https://arepo-code.org/wp-content/userguide/parameterfile.html#time-integration-accuracy", "https://arepo-code.org/wp-content/userguide/parameterfile.html#output-frequency"]
 
   coordinate str
     !options [
@@ -115,6 +119,9 @@ $schema simulation_time
     ?visibility "expert"
 
 $schema simulation_settings
+  ?descr "Spatial and temporal settings."
+  ?url "https://arepo-code.org/wp-content/userguide/parameterfile.html#simulated-time-span-and-spatial-extent"
+  ?see ["https://arepo-code.org/wp-content/userguide/parameterfile.html#cosmological-parameters", "https://arepo-code.org/wp-content/userguide/parameterfile.html#time-integration-accuracy"]
 
   domain : simulation_domain
   time : simulation_time

@@ -1,7 +1,7 @@
-# Reusable Arepo output contract. `snapshot_settings` is defined in snapshots.dip.
-# Arepo runtime parameter reference:
-# https://arepo-code.org/wp-content/userguide/parameterfile.html
 $schema output_schedule_settings
+  ?descr "Explicit snapshot scheduling."
+  ?url "https://arepo-code.org/wp-content/userguide/parameterfile.html#output-file-names-and-formats"
+  ?see ["https://arepo-code.org/wp-content/userguide/parameterfile.html#output-frequency"]
 
   enabled bool = false
     ?descr "Whether Arepo reads an explicit output-time schedule file."
@@ -19,6 +19,9 @@ $schema output_schedule_settings
     ?category "snapshot scheduling"
 
 $schema output_settings
+  ?descr "Snapshot and scheduling settings."
+  ?url "https://arepo-code.org/wp-content/userguide/parameterfile.html#output-file-names-and-formats"
+  ?see ["https://arepo-code.org/wp-content/userguide/parameterfile.html#output-frequency"]
 
   schedule : output_schedule_settings
   snapshots : snapshot_settings

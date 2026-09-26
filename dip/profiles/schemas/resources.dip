@@ -1,7 +1,6 @@
-# Reusable execution-resource contract for an Arepo run.
-# Arepo runtime parameter reference:
-# https://arepo-code.org/wp-content/userguide/parameterfile.html
 $schema memory_resources
+  ?descr "Per-rank memory allocation."
+  ?url "https://arepo-code.org/wp-content/userguide/parameterfile.html#memory-allocation"
 
   per_rank int
     !condition ({.} > 0)
@@ -14,6 +13,9 @@ $schema memory_resources
     ?visibility "advanced"
 
 $schema wall_clock_resources
+  ?descr "Runtime limits and restart intervals."
+  ?url "https://arepo-code.org/wp-content/userguide/parameterfile.html#cpu-time-limit-and-restarts"
+  ?see ["https://arepo-code.org/wp-content/userguide/parameterfile.html#output-frequency"]
 
   limit float s
     !condition ({.} > 0 s)
@@ -42,6 +44,8 @@ $schema wall_clock_resources
       requires_enabled = ["build.io.reduced_flush"]
 
 $schema execution_resources
+  ?descr "Continuation-job submission settings."
+  ?url "https://arepo-code.org/wp-content/userguide/parameterfile.html#cpu-time-limit-and-restarts"
 
   resubmit bool = false
     ?descr "Whether Arepo should submit a continuation job after reaching its time limit."
@@ -57,6 +61,9 @@ $schema execution_resources
     ?category "batch execution"
 
 $schema resources_settings
+  ?descr "Memory and execution resources."
+  ?url "https://arepo-code.org/wp-content/userguide/parameterfile.html#cpu-time-limit-and-restarts"
+  ?see ["https://arepo-code.org/wp-content/userguide/parameterfile.html#memory-allocation", "https://arepo-code.org/wp-content/userguide/parameterfile.html#output-frequency"]
 
   memory : memory_resources
   wall_clock : wall_clock_resources

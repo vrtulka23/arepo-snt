@@ -1,8 +1,6 @@
-# Reusable runtime analysis contract. Compile-time capabilities remain in
-# `build.analysis`; these values configure the enabled analysis algorithms.
-# Arepo runtime parameter reference:
-# https://arepo-code.org/wp-content/userguide/parameterfile.html
 $schema subfind_analysis_settings
+  ?descr "Subfind runtime controls."
+  ?url "https://arepo-code.org/wp-content/userguide/parameterfile.html#subfind-parameters"
 
   linking_neighbors int
     !condition ({.} > 0)
@@ -19,5 +17,7 @@ $schema subfind_analysis_settings
     ?requires "build.analysis.subfind"
 
 $schema analysis_settings
+  ?descr "Runtime analysis settings."
+  ?url "https://arepo-code.org/wp-content/userguide/parameterfile.html#subfind-parameters"
 
   subfind : subfind_analysis_settings

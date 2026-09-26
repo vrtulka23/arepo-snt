@@ -1,7 +1,6 @@
-# Reusable mesh runtime contracts, composed by `mesh_settings`.
-# Arepo runtime parameter reference:
-# https://arepo-code.org/wp-content/userguide/parameterfile.html
 $schema mesh_regularization
+  ?descr "Mesh regularization controls."
+  ?url "https://arepo-code.org/wp-content/userguide/parameterfile.html#moving-mesh"
 
   shaping_speed float = 0.5
     !condition ({.} >= 0)
@@ -37,6 +36,8 @@ $schema mesh_regularization
       enabled = false
 
 $schema mesh_refinement
+  ?descr "Refinement and derefinement controls."
+  ?url "https://arepo-code.org/wp-content/userguide/parameterfile.html#refinement-and-derefinement"
 
   reference_gas_mass float = 0 arepo_mass
     ?descr "Reference gas-cell mass for refinement."
@@ -82,6 +83,9 @@ $schema mesh_refinement
       requires_enabled = ["build.mesh.refinement"]
 
 $schema mesh_settings
+  ?descr "Mesh adaptation settings."
+  ?url "https://arepo-code.org/wp-content/userguide/parameterfile.html#moving-mesh"
+  ?see ["https://arepo-code.org/wp-content/userguide/parameterfile.html#refinement-and-derefinement"]
 
   regularization : mesh_regularization
   refinement : mesh_refinement

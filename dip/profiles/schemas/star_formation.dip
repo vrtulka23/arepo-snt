@@ -1,8 +1,6 @@
-# Reusable Springel-Hernquist star-formation contract. Profiles instantiate it
-# only when the USE_SFR build capability is selected.
-# Arepo runtime parameter reference:
-# https://arepo-code.org/wp-content/userguide/parameterfile.html
 $schema star_formation_settings
+  ?descr "Star-formation model parameters."
+  ?url "https://arepo-code.org/wp-content/userguide/parameterfile.html#cooling-and-star-formation"
 
   critical_overdensity float
     ?descr "Critical overdensity above which star formation may occur in a comoving integration."

@@ -1,8 +1,8 @@
-# Shared compile-time capability contract. Profiles instantiate `arepo_build`
-# and specify only departures from these safe defaults. Native names are kept
-# on the DIPL nodes; export tags select them for Arepo Config.sh.
-# https://arepo-code.org/wp-content/userguide/config-options.html
 $schema arepo_build
+  ?descr "Compile-time capabilities mapped to Config.sh."
+  ?url "https://arepo-code.org/wp-content/userguide/config-options.html"
+  ?see "https://arepo-code.org/wp-content/userguide/index.html#disclaimer"
+  ?rationale "Profiles override the shared defaults; native names and discovery tags are carried by individual fields. Defaults are example configuration choices, not general scientific recommendations."
 
   boundaries
     x_mode int = 0

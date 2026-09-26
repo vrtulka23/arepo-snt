@@ -8,6 +8,7 @@ import subprocess
 import sys
 import tempfile
 import unittest
+from unittest.mock import patch
 
 sys.path.insert(0, str(Path(__file__).parents[1] / "src"))
 
@@ -153,9 +154,14 @@ from arepo_dipl.generator import generate, _render_config, _render_parameters, _
 from arepo_dipl.tables import render_tables
 with tempfile.TemporaryDirectory(dir=sys.argv[2]) as directory:
     path = generate(Path(directory), sys.argv[1])
-    outputs = {name: (path / name).read_text() for name in ("Config.sh", "param.txt", "output_list.txt")}
+    outputs = {name: (path / name).read_text() for name in ("Config.sh", "param.txt")}
     env = Environment()
     env.load(path / "environment.diph5")
+    if env["output.schedule.enabled"].value:
+        outputs["output_list.txt"] = (path / env["output.schedule.filename"].value).read_text()
+    else:
+        assert not (path / "output_list.txt").exists()
+        outputs["output_list.txt"] = ""
     assert _render_config(env) == outputs["Config.sh"]
     assert _render_parameters(env) == outputs["param.txt"]
     assert _render_schedule(env) == outputs["output_list.txt"]
@@ -205,6 +211,53 @@ with tempfile.TemporaryDirectory(dir=sys.argv[2]) as directory:
             _render_schedule(parse('output.schedule.enabled bool = true\n'
                                    'simulation.time.coordinate str = "linear"\n'))
         self.assertEqual(_render_schedule(parse('output.schedule.enabled bool = false\n')), "")
+
+    def test_schedule_output_uses_configured_filename(self):
+        from arepo_dipl.generator import generate
+
+        source = '''output.schedule.enabled bool = true
+output.schedule.filename str = "./schedules/custom.txt"
+  !tags ["arepo:param"]
+  ?native "OutputListFilename"
+simulation.time.coordinate str = "linear"
+gravity.softenings.particle_type_map int[:] = []
+output_schedule table = """
+time float
+write_flag int
+---
+0.25 1
+0.5 1
+"""
+'''
+        env = parse(source)
+        with tempfile.TemporaryDirectory(dir=ROOT) as directory:
+            output = Path(directory) / "generated"
+            with patch("arepo_dipl.generator.load_environment", return_value=env):
+                generate(output)
+            self.assertEqual((output / "schedules/custom.txt").read_text(), "0.25 1\n0.5 1\n")
+            self.assertIn("./schedules/custom.txt", (output / "param.txt").read_text())
+            self.assertFalse((output / "output_list.txt").exists())
+
+        for filename in ("../outside.txt", "param.txt", "environment.diph5", "Config.sh", "."):
+            with self.subTest(filename=filename), tempfile.TemporaryDirectory(dir=ROOT) as directory:
+                output = Path(directory) / "generated"
+                env = parse(source.replace("./schedules/custom.txt", filename))
+                with patch("arepo_dipl.generator.load_environment", return_value=env):
+                    with self.assertRaisesRegex(GenerationError, "output path"):
+                        generate(output)
+                self.assertFalse(output.exists())
+
+        dataset = '''datasets.reference
+  output_file str = "schedules/custom.txt"
+    !tags ["arepo:dataset"]
+  columns str[:] = ["x"]
+  data.x float[:] = [1, 2]
+'''
+        with tempfile.TemporaryDirectory(dir=ROOT) as directory:
+            env = parse(source + dataset)
+            with patch("arepo_dipl.generator.load_environment", return_value=env):
+                with self.assertRaisesRegex(GenerationError, "conflicting output path"):
+                    generate(Path(directory) / "generated")
 
     def test_all_supplied_numeric_tables_are_in_inventory(self):
         supplied = {"data/TREECOOL_ep"}

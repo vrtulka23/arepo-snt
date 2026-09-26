@@ -1,8 +1,6 @@
-# Reusable runtime cooling contract. Profiles instantiate it only when the
-# COOLING build capability is selected.
-# Arepo runtime parameter reference:
-# https://arepo-code.org/wp-content/userguide/parameterfile.html
 $schema cooling_settings
+  ?descr "Radiative cooling input."
+  ?url "https://arepo-code.org/wp-content/userguide/parameterfile.html#cooling-and-star-formation"
 
   uv_background_file str
     ?descr "Cooling and UV-background table used by Arepo."

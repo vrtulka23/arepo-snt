@@ -1,7 +1,6 @@
-# Reusable cosmological background contract for Arepo profiles.
-# Arepo runtime parameter reference:
-# https://arepo-code.org/wp-content/userguide/parameterfile.html
 $schema cosmology_settings
+  ?descr "Cosmological background parameters."
+  ?url "https://arepo-code.org/wp-content/userguide/parameterfile.html#cosmological-parameters"
 
   matter_density float
     ?descr "Present-day total matter density parameter, Omega0."

@@ -1,8 +1,7 @@
-# Reusable hydrodynamics runtime contract. Code-unit custom units are supplied
-# by the generator before this schema is parsed.
-# Arepo runtime parameter reference:
-# https://arepo-code.org/wp-content/userguide/parameterfile.html
 $schema hydrodynamics_settings
+  ?descr "Gas evolution controls."
+  ?url "https://arepo-code.org/wp-content/userguide/parameterfile.html#hydrodynamics"
+  ?see ["https://arepo-code.org/wp-content/userguide/parameterfile.html#initial-conditions", "https://arepo-code.org/wp-content/userguide/parameterfile.html#time-integration-accuracy", "https://arepo-code.org/wp-content/userguide/parameterfile.html#moving-mesh"]
 
   courant_factor float = 0.3
     !condition ({.} >= 0)

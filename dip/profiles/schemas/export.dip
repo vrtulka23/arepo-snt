@@ -1,6 +1,7 @@
-# Optional child contract for tagged values. This policy belongs to dip/,
-# not to the DIPL language. Ordinary scalars and booleans need no export child.
 $schema arepo_export
+  ?descr "Optional typed policy for the local AREPO exporter."
+  ?see "dip/README.md"
+  ?rationale "Defined by this integration, not by AREPO or the DIPL language. Ordinary scalar and boolean exports need no policy child."
 
   enabled bool = true
     ?descr "Include this value in native output when its other conditions pass."
