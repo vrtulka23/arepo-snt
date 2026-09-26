@@ -117,3 +117,6 @@ analysis : analysis_settings
 
 # This example exports the centre-of-mass shaping threshold.
 mesh.regularization.shaping_factor.export.enabled = true
+
+# Output schedule from the upstream example create.py (%g precision).
+output_schedule table = {schedule_data}

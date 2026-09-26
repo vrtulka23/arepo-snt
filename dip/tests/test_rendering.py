@@ -144,11 +144,13 @@ build.physics.star_formation bool = false
     def test_all_setups_preserve_native_outputs(self):
         # Fingerprints captured from the pre-migration generator. Ignore comments,
         # whitespace and line ordering, but retain every native name and value.
+        # Three previously missing schedules now use the upstream create.py values.
         expected = json.loads((ROOT / "tests" / "native_output_hashes.json").read_text())
         script = '''import json, sys, tempfile
 from pathlib import Path
 from scinumtools3.dip import Environment
 from arepo_dipl.generator import generate, _render_config, _render_parameters, _render_schedule
+from arepo_dipl.tables import render_tables
 with tempfile.TemporaryDirectory(dir=sys.argv[2]) as directory:
     path = generate(Path(directory), sys.argv[1])
     outputs = {name: (path / name).read_text() for name in ("Config.sh", "param.txt", "output_list.txt")}
@@ -157,6 +159,20 @@ with tempfile.TemporaryDirectory(dir=sys.argv[2]) as directory:
     assert _render_config(env) == outputs["Config.sh"]
     assert _render_parameters(env) == outputs["param.txt"]
     assert _render_schedule(env) == outputs["output_list.txt"]
+    datasets = render_tables(env)
+    inventory = json.loads((Path(sys.argv[2]) / "tests/table_inventory.json").read_text())
+    for record in inventory:
+        if record["setup"] != sys.argv[1]:
+            continue
+        filename = record["filename"]
+        rendered = (path / filename).read_text()
+        # Cooling's declared path has an explicit ./ prefix.
+        assert rendered == datasets.get(filename, datasets.get("./" + filename))
+        original = (Path(sys.argv[2]).parent / record["source"]).read_text()
+        def numeric_rows(text):
+            return [[float(item) for item in line.split()] for line in text.splitlines()
+                    if line.strip() and not line.lstrip().startswith("#")]
+        assert numeric_rows(rendered) == numeric_rows(original), record["source"]
     print(json.dumps(outputs))
 '''
         # Different setups redefine the same custom units, so isolate their
@@ -165,12 +181,45 @@ with tempfile.TemporaryDirectory(dir=sys.argv[2]) as directory:
             with self.subTest(setup=setup):
                 outputs = json.loads(subprocess.check_output(
                     [sys.executable, "-B", "-c", script, setup, str(ROOT)], text=True))
+                schedules = {
+                    "cosmo_zoom_gravity_only_3d": [.0197, .2, .25, .33, .5, .66, 1],
+                    "galaxy_merger_star_formation_3d": [3*i/31 for i in range(32)],
+                    "isolated_galaxy_collisionless_3d": [i/9 for i in range(10)],
+                }
+                if setup in schedules:
+                    rows = [line.split() for line in outputs["output_list.txt"].splitlines()]
+                    self.assertEqual([float(row[0]) for row in rows],
+                                     [float(f"{time:g}") for time in schedules[setup]])
+                    self.assertEqual([int(row[1]) for row in rows], [1]*len(rows))
                 for name, text in outputs.items():
                     canonical = "\n".join(sorted(
                         " ".join(line.split()) for line in text.splitlines()
                         if line.strip() and not line.startswith(("#", "%"))))
                     self.assertEqual(hashlib.sha256(canonical.encode()).hexdigest(), hashes[name],
                                      f"{setup}/{name} changed:\n{text}")
+
+    def test_enabled_schedule_requires_matching_table(self):
+        from arepo_dipl.generator import _render_schedule
+
+        with self.assertRaisesRegex(GenerationError, "output_schedule.time"):
+            _render_schedule(parse('output.schedule.enabled bool = true\n'
+                                   'simulation.time.coordinate str = "linear"\n'))
+        self.assertEqual(_render_schedule(parse('output.schedule.enabled bool = false\n')), "")
+
+    def test_all_supplied_numeric_tables_are_in_inventory(self):
+        supplied = {"data/TREECOOL_ep"}
+        for path in (ROOT.parent / "examples").rglob("*"):
+            if not path.is_file() or path.suffix not in (".txt", ".dat"):
+                continue
+            try:
+                rows = [[float(value) for value in line.split()] for line in path.read_text().splitlines()
+                        if line.strip() and not line.lstrip().startswith("#")]
+            except (UnicodeError, ValueError):
+                continue  # Parameter files and binary initial conditions are not numeric tables.
+            if rows:
+                supplied.add(str(path.relative_to(ROOT.parent)))
+        inventory = json.loads((ROOT / "tests/table_inventory.json").read_text())
+        self.assertEqual({record["source"] for record in inventory}, supplied)
 
 
 if __name__ == "__main__":

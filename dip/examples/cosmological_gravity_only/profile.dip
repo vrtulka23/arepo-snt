@@ -153,3 +153,6 @@ analysis : analysis_settings
 
 # This example exports the centre-of-mass shaping threshold.
 mesh.regularization.shaping_factor.export.enabled = true
+
+# Output times are imported from the example-local DIPL table.
+output_schedule table = {schedule_data}

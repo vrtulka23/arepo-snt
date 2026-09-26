@@ -19,8 +19,9 @@ class CatalogTests(unittest.TestCase):
     def test_mhd_setup_is_registered(self):
         from arepo_dipl.generator import SETUPS
 
-        self.assertEqual(SETUPS["mhd_shock_tube"][1].name, "profile.dip")
-        self.assertEqual(SETUPS["cosmological_gravity_only"][1].name, "profile.dip")
+        for setup in ("mhd_shock_tube", "cosmological_gravity_only"):
+            self.assertEqual(SETUPS[setup].name, "DIPfile")
+            self.assertTrue(SETUPS[setup].is_file())
 
     def test_every_arepo_example_has_a_dipl_setup(self):
         from arepo_dipl.generator import SETUPS

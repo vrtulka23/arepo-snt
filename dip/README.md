@@ -12,16 +12,22 @@ derives DIPL custom units named `arepo_length`, `arepo_mass`, and
 declares derived units such as `arepo_time` and `arepo_density`. All code-space
 settings in the profile use those units.
 
+Each `examples/<setup>/DIPfile` declares the complete ordered input list.
+The generator discovers these manifests and loads the selected one with
+`DIP.add_project()`; there is no Python registry of source files. Paths in a
+manifest are relative to its directory, independent of the working directory.
 The files are loaded in this order:
 
 1. `profiles/schemas/export.dip`, then the selected shared or example-local unit profile
 2. `profiles/schemas/`, the reusable `ideal_hydrodynamics.dip` and/or
    `standard_softenings.dip` layers where appropriate, and the selected
    `examples/<setup>/profile.dip`
-3. optional DIPL tables owned by that example
+3. example-owned tables, imported by the profile from named manifest sources
 4. `profiles/overrides.dip`
 5. `profiles/native_controls.dip`, which derives native switches from the
    final overridden values
+6. example-owned `tables.dip`, where present, which imports scientific datasets
+   and resolves their output filenames from the final settings
 
 `profiles/overrides.dip` is the user-editable overlay. Add ordinary DIPL
 modifications there; do not edit derived unit
@@ -54,7 +60,9 @@ PYTHONPATH=src python3 -m arepo_dipl generate --output generated
 ```
 
 The command writes `Config.sh`, `param.txt`, `output_list.txt`, and a complete
-`environment.diph5` snapshot below the requested output directory. It uses
+`environment.diph5` snapshot below the requested output directory, together
+with the setup's imported scientific datasets in their original native file
+layouts. It uses
 Arepo-safe comments in the two native files. DIPH5 2.3 records evaluated
 values, units, node settings, source and trace provenance, custom-unit
 registrations, value-bearing groups, and collection-item data. The snapshot
@@ -137,9 +145,96 @@ tags, missing native names, and duplicate active native names raise errors.
 `profiles/native_controls.dip` supplies derived runtime switches after the
 user overlay because DIPL references capture values at definition time.
 
-Python still selects source files and renders indexed softening families and
+The manifests select source files. Python renders indexed softening families and
 output-schedule tables. `inventory.py` scans the untouched AREPO
 `Template-Config.sh` and `src/io/parameters.c` for coverage auditing.
+
+To load a setup directly with SciNumTools, without the AREPO generator:
+
+```python
+from scinumtools3.dip import DIP
+
+dip = DIP()
+dip.add_project("dip/examples/mhd_shock_tube/DIPfile")
+env = dip.parse()
+```
+
+The same manifest works with `snt dip parse --project
+dip/examples/mhd_shock_tube/DIPfile --print`. Add a setup by creating another
+example directory with its own `DIPfile`; it is automatically available to
+the generator's `--setup` option.
+
+External `.dipt` files contain column declarations, the `---` separator, and
+data rows. They are registered as `sources[]` in the manifest, with paths
+relative to that manifest, and imported in the profile:
+
+```dipl
+output_schedule table = {schedule_data}
+```
+
+They are not standalone DIPL programs and must not be listed as `code[]`.
+
+All five examples with enabled output lists have schedule tables: the two
+cosmological volumes, the cosmological zoom, the galaxy merger, and the
+isolated collisionless galaxy. Cosmological tables declare `scale_factor
+float`; linear-time tables declare `time float arepo_time`. Both include
+`write_flag int`. The three added schedules reproduce the upstream
+`create.py` output lists, including their `%g` text precision. An enabled
+schedule without the appropriate table column raises an error.
+
+## Scientific datasets
+
+The supplied numeric example tables are also represented as `.dipt` files:
+
+- The shared cooling/UV dataset is in `tables/TREECOOL_ep.dipt`, imported by
+  both star-formation setups and emitted at `cooling.uv_background_file` when
+  cooling is enabled.
+- MHD shock-tube and blast-wave reference solutions, halo-mass reference
+  tables, and star-formation histories live in their examples' `tables/`
+  directories.
+- Both supplied `inputspec_ics.txt` spectrum datasets are included, although
+  the supplied N-GenIC configurations select an analytic spectrum. Their
+  two-number preamble is preserved separately from the four-column table.
+
+Each manifest registers named sources. The corresponding `tables.dip` imports
+them under `datasets`, with `arepo:dataset` attached to the explicit
+`output_file` value solely for discovery. The upstream source is recorded once
+as `?see` metadata on that value; the manifest alone locates the `.dipt` input.
+Each dataset also declares ordered column names, an optional preamble, and a
+`data table = {source}` import. For example:
+
+```dipl
+datasets.Masses_L50n32_z0
+  output_file str = "Masses_L50n32_z0.txt"
+    !tags ["arepo:dataset"]
+    ?see "examples/cosmo_box_gravity_only_3d/Masses_L50n32_z0.txt"
+  columns str[:] = ["mass"]
+  data table = {dataset_Masses_L50n32_z0}
+```
+
+The explicit `columns` list is currently needed because SciNumTools expands
+tables into value nodes without exposing durable table-column order through
+its Python API. DIPH5 loading may reorder nodes; inferring columns from that
+order would corrupt positional native files. This list can be removed when
+the API exposes persistent table-column order. The cooling dataset
+uses the existing typed export policy to depend on the cooling feature.
+
+Columns preserve upstream numeric conventions without rescaling or assuming
+physical units that have not been established. Spectrum column names remain
+neutral because the example files do not document their interpretation.
+The blast-wave's original comment is retained verbatim; its fourth column is
+named pressure following the upstream checking code. Table values and their
+declarations survive in DIPH5, and native files can be rendered from that
+snapshot without the original sources. Native numeric output uses 17
+significant digits to preserve binary64 values; whitespace can differ from
+the source files.
+
+There are 15 distinct additional table files and 16 imports across the
+setups, alongside the five schedules. This covers all numeric `.txt`/`.dat`
+tables currently supplied under upstream `examples/`, plus the shared
+`data/TREECOOL_ep` dependency. Binary initial conditions, simulation-generated
+logs, and configurations for external initial-condition generators retain
+their existing roles; they are not converted into tables.
 
 ## Verify
 
@@ -151,7 +246,12 @@ PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=snt3/build/python:dip/src python3 -B -m uni
 
 Tests compare all sixteen setups against fingerprints of the previous
 generator's native names and values, ignoring comments, whitespace and order.
+The three formerly missing schedule fingerprints were updated to their
+upstream values; their time ordering and write flags are also checked explicitly.
 They also check schema and policy overrides, feature dependencies, unit conversion, derived
 switches, error reporting, and rendering from DIPH5 snapshots. Each setup runs
 in a separate process because its custom unit definitions share names with
 other setups.
+Dataset tests audit the supplied numeric-table inventory and compare every
+generated table numerically against its upstream source, including after
+DIPH5 loading.

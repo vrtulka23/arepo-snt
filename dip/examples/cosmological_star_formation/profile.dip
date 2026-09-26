@@ -185,3 +185,6 @@ analysis : analysis_settings
   mhd
     seed_field float = 0
 @end
+
+# Output times are imported from the example-local DIPL table.
+output_schedule table = {schedule_data}
