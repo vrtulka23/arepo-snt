@@ -84,12 +84,16 @@ mesh
     reference_gas_mass = 9.76211e-5 arepo_mass
     mean_volume float = 66800.2 arepo_length3
       ?native "MeanVolume"
+      !tags ["arepo:param"]
     maximum_volume_difference float = 10
       ?native "MaxVolumeDiff"
+      !tags ["arepo:param"]
     minimum_volume float = 1 arepo_length3
       ?native "MinVolume"
+      !tags ["arepo:param"]
     maximum_volume float = 1e9 arepo_length3
       ?native "MaxVolume"
+      !tags ["arepo:param"]
 cooling : cooling_settings
   uv_background_file = "./TREECOOL_ep"
 

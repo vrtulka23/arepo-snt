@@ -8,12 +8,14 @@ $schema subfind_analysis_settings
     !condition ({.} > 0)
     ?descr "Minimum number of particles/cells retained in a Subfind group."
     ?native "DesLinkNgb"
+    !tags ["arepo:param"]
     ?requires "build.analysis.subfind"
 
   opening_angle float
     !condition ({.} > 0)
     ?descr "Subfind tree opening angle."
     ?native "ErrTolThetaSubfind"
+    !tags ["arepo:param"]
     ?requires "build.analysis.subfind"
 
 $schema analysis_settings

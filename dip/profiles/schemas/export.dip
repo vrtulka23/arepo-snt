@@ -1,0 +1,15 @@
+# Optional child contract for tagged values. This policy belongs to dip/,
+# not to the DIPL language. Ordinary scalars and booleans need no export child.
+$schema arepo_export
+
+  enabled bool = true
+    ?descr "Include this value in native output when its other conditions pass."
+
+  units str = "native"
+    ?descr "Destination unit expression; native preserves the declared value's units."
+
+  omit_nonpositive bool = false
+    ?descr "Omit numeric values that are zero or negative."
+
+  requires_enabled str[:] = []
+    ?descr "Full paths of boolean features that must all be enabled. Resolved at export time after overrides."

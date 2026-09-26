@@ -4,7 +4,6 @@ import unittest
 
 sys.path.insert(0, str(Path(__file__).parents[1] / "src"))
 
-from arepo_dipl.catalog import CONFIG, PARAMETERS, RenderRule
 from arepo_dipl.inventory import runtime_tags, template_flags
 
 
@@ -12,24 +11,10 @@ ROOT = Path(__file__).parents[2]
 
 
 class CatalogTests(unittest.TestCase):
-    def test_render_rules_do_not_duplicate_native_names(self):
-        for rule in (*CONFIG, *PARAMETERS):
-            self.assertIsInstance(rule, RenderRule)
-            self.assertFalse(hasattr(rule, "native"))
-        generator = (ROOT / "dip" / "src" / "arepo_dipl" / "generator.py").read_text()
-        self.assertIn("metadata.native", generator)
-        self.assertIn("has no `?native` metadata", generator)
-
     def test_arepo_inventory_is_readable(self):
         self.assertIn("COOLING", template_flags(ROOT))
         self.assertIn("PMGRID", template_flags(ROOT))
         self.assertIn("InitCondFile", runtime_tags(ROOT))
-
-    def test_selected_profile_has_semantic_core_mappings(self):
-        fqps = {entry.fqp for entry in PARAMETERS}
-        self.assertIn("code_units.length", fqps)
-        self.assertIn("simulation.domain.box.size", fqps)
-        self.assertIn("star_formation.supernova_temperature", fqps)
 
     def test_mhd_setup_is_registered(self):
         from arepo_dipl.generator import SETUPS

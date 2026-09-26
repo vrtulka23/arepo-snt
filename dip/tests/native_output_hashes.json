@@ -1,0 +1,82 @@
+{
+  "cosmological_star_formation": {
+    "Config.sh": "cba5d0696940a5916db433f4194838023e8c6e496253d96c1e25b7336bbd361a",
+    "param.txt": "b17bc5e19c65cf2754d61fd1e7c55e53b9a1d6bbcd7d6709f5f1396230b9ef9c",
+    "output_list.txt": "b24cc0cdd3f177bf1cc452ed677e108d129af21d57a29a14d888896ee741c710"
+  },
+  "mhd_shock_tube": {
+    "Config.sh": "947c75b9d781218d2abadf2e94cac41048fa130443f65b65f3ef03d03f4c108a",
+    "param.txt": "4884badbdd892f5f8839ff149c219964b9ccca5520c7fee01d7af281c638be11",
+    "output_list.txt": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  "cosmological_gravity_only": {
+    "Config.sh": "0cb1bb71e06dc4859c432b1caeb753239e963da4798d6a8d33f88444dc0192c5",
+    "param.txt": "3d6ad767a0e24ca68627cfbe9c9ea379fcbb4d66f4e5481abf0045d867ad39f0",
+    "output_list.txt": "59cc705251aa984e5b0241f7a38e183d5c75b2f71c8c92ec1229eaeef598767f"
+  },
+  "alfven_wave_1d": {
+    "Config.sh": "f6a0e28f0a81f7d3b216f4b3c9000f95da955dc93f1d3bbaf53e3a01bbb540a8",
+    "param.txt": "a3974d2e55dd6480cb3d5042e25dc11087a5fafe983ed6b266abb54d124af268",
+    "output_list.txt": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  "cosmo_zoom_gravity_only_3d": {
+    "Config.sh": "0facc14b729ce17d104ada1f09a1c4f94060f7d0ec36cb134858a08dae899cf3",
+    "param.txt": "8dd697380f23fb043e66c03fa4519c636d3997e353ab6b534aa2fa1557dbbeda",
+    "output_list.txt": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  "current_sheet_2d": {
+    "Config.sh": "1c73886cb36c0b1f6aad2139e65cccf60e99178a1989463de1c4c8ccd0945060",
+    "param.txt": "575dfe3c579e903282a5217cfbe14569434e4cc01e73e0d490e70a234be69594",
+    "output_list.txt": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  "galaxy_merger_star_formation_3d": {
+    "Config.sh": "333637354bedd7b6c36efb72f9177147fc0f966df8e45bf20c9ba72a94b6b2df",
+    "param.txt": "1eaed2fbc0f58da887e57cc9d3822413ef1bc6000c767ea0617382d8162377ca",
+    "output_list.txt": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  "gresho_2d": {
+    "Config.sh": "91023a35bc2d725a3b3dcca1f7bf8dd3979d4fd031266f341c9ee36ba96bdf38",
+    "param.txt": "53ea9ff35a1a8daffcdbbab9759188c26c2b34a7d35c4d14b13426b9d5853e71",
+    "output_list.txt": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  "interacting_blastwaves_1d": {
+    "Config.sh": "9a46bc605c0d727652affc62b5f5609171b7a5adb2b85edc66a40bad33b58615",
+    "param.txt": "a1b68d2f635cc74d9de8acbd8f2423095ba8a3a6c52081e61c5794b3aaf1dc19",
+    "output_list.txt": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  "isolated_galaxy_collisionless_3d": {
+    "Config.sh": "edc8c88481966b523a10bb2b717d03a85f693efd517248c4c2ba3100164f1dd9",
+    "param.txt": "ebb2ce00cd7ea91e3c3cf540bda7d5dcf831a1a856452a2492697b19b133857a",
+    "output_list.txt": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  "noh_2d": {
+    "Config.sh": "02a0d564c370c43cb7823e336c89070b24f94d62a7008923cde4dab98c714ded",
+    "param.txt": "0f34e2ae755b771283191942e1e292bbbe9f4eb79fb4945ca0d2ead408252486",
+    "output_list.txt": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  "noh_3d": {
+    "Config.sh": "7761e8ccd9f8760144e15834ed3558bb8bc6203980cd984d216dffe2b71984d9",
+    "param.txt": "f45f1b0d183b993ae33e595dbb27060b014a2b9c85e80f21d15e26e78ad25625",
+    "output_list.txt": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  "polytrope_1d_spherical": {
+    "Config.sh": "de6690f5c57eecbdb1580fe4172625f92143c8835537bfffd02bb8629d3314b8",
+    "param.txt": "d028e49f65481bfac4015d8fbeb780693c9b89a9d726aa7430fb7236d3cbed17",
+    "output_list.txt": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  "shocktube_1d": {
+    "Config.sh": "ae2e2fbc9c05c5f2521e3d3820e0ee561196869d304ab91b5ce532b301cdcdce",
+    "param.txt": "b872f5ff09be856bcad2c539516107e003a9e8b88154ae3e44e54f4ec1e99728",
+    "output_list.txt": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  "wave_1d": {
+    "Config.sh": "fb47b13e50815aee44fdf64a5b4f375968175ffdc282e18c82c8ecec68ef9f03",
+    "param.txt": "2a702c75b3f4e82b9bfc1f8b3c43f636230f086f8b8ba45fe725252031ed62ea",
+    "output_list.txt": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  "yee_2d": {
+    "Config.sh": "d83449bc523dac989038283d1184936539b48b54c31875f940bc33193b7b37e8",
+    "param.txt": "12bd84cd7ed8ddb4800351db556e02a65e6b50d0c850e78c7d4ef34b02e70ae6",
+    "output_list.txt": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  }
+}

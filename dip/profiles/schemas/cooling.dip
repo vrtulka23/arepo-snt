@@ -7,5 +7,8 @@ $schema cooling_settings
   uv_background_file str
     ?descr "Cooling and UV-background table used by Arepo."
     ?native "TreecoolFile"
+    !tags ["arepo:param"]
     ?requires "build.physics.cooling"
     ?category "radiative cooling"
+    export : arepo_export
+      requires_enabled = ["build.physics.cooling"]

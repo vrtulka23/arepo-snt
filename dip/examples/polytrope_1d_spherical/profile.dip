@@ -37,11 +37,13 @@ gravity
 polytrope
   core_radius float = 0.1 arepo_length
     ?native "CoreRadius"
+    !tags ["arepo:param"]
     ?requires "build.geometry.spherical_one_dimensional"
     ?scientific_impact "Sets the inner radial boundary of the one-dimensional spherical simulation."
     ?category "spherical boundary"
   core_mass float = 4.12455e-3 arepo_mass
     ?native "CoreMass"
+    !tags ["arepo:param"]
     ?requires "build.geometry.spherical_one_dimensional"
     ?scientific_impact "Provides the mass enclosed by the inner boundary for the gravity calculation."
     ?category "spherical boundary"

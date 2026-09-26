@@ -72,3 +72,6 @@ gravity
     gas_softening_factor = 2.5
     minimum_comoving = 1 arepo_length
     spacing = 1.2
+
+# This example exports the centre-of-mass shaping threshold.
+mesh.regularization.shaping_factor.export.enabled = true

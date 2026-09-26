@@ -114,3 +114,6 @@ analysis : analysis_settings
   subfind
     linking_neighbors = 20
     opening_angle = 0.5
+
+# This example exports the centre-of-mass shaping threshold.
+mesh.regularization.shaping_factor.export.enabled = true

@@ -153,7 +153,7 @@ mesh : mesh_settings
     shaping_speed = 0.5
     maximum_face_angle_factor = 2.25
 
-# The selected setup instantiates these feature schemas.  The catalog gates
+# The selected setup instantiates these feature schemas. Export tags gate
 # their native emission with the corresponding build capabilities.
 mesh
   refinement

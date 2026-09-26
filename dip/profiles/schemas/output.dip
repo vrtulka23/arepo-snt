@@ -6,6 +6,7 @@ $schema output_schedule_settings
   enabled bool = false
     ?descr "Whether Arepo reads an explicit output-time schedule file."
     ?native "OutputListOn"
+    !tags ["arepo:param"]
     ?requires "output.schedule.filename"
     ?implies "output.schedule.filename"
     ?scientific_impact "Selects explicitly chosen output epochs instead of the regular cadence defined by simulation.time.first_snapshot and simulation.time.snapshot_interval."
@@ -14,6 +15,7 @@ $schema output_schedule_settings
   filename str
     ?descr "Path to the output-time schedule file when scheduling is enabled."
     ?native "OutputListFilename"
+    !tags ["arepo:param"]
     ?category "snapshot scheduling"
 
 $schema output_settings
