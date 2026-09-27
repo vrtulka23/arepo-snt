@@ -31,6 +31,39 @@ def entries(env, target):
 
 
 class RenderingTests(unittest.TestCase):
+    def test_manifest_loads_unwrapped_overrides_before_dependencies(self):
+        from arepo_dipl.generator import load_environment
+
+        with tempfile.TemporaryDirectory(dir=ROOT) as directory:
+            folder = Path(directory)
+            manifest = folder / "DIPfile"
+            manifest.write_text('code[]\n  file = "profile.dip"\noverrides[]\n  file = "tuning.dip"\n')
+            (folder / "profile.dip").write_text('''$schema time_settings
+  initial_redshift float = 127
+simulation.time : time_settings
+simulation.time.begin float = ( 1 / ( 1 + {?simulation.time.initial_redshift} ) )
+''')
+            overrides = folder / "tuning.dip"
+            with patch.dict("arepo_dipl.generator.SETUPS", {"host_test": manifest}):
+                for body in ("", "# No tuning\n"):
+                    overrides.write_text(body)
+                    env = load_environment("host_test")
+                    self.assertEqual(env["simulation.time.begin"].value, 1 / 128)
+                overrides.write_text("simulation\n  time\n    initial_redshift = 63\n")
+                env = load_environment("host_test")
+                self.assertEqual(env["simulation.time.begin"].value, 1 / 64)
+                self.assertTrue(env.select("?simulation.time.initial_redshift")[0].override)
+                snapshot = folder / "environment.diph5"
+                env.save(snapshot)
+                loaded = Environment()
+                loaded.load(snapshot)
+                self.assertEqual(loaded["simulation.time.begin"].value, 1 / 64)
+                self.assertTrue(loaded.select("?simulation.time.initial_redshift")[0].override)
+                self.assertIn("63", loaded["simulation.time.initial_redshift"].provenance.override_code)
+                overrides.write_text("simulation.time.nonexistent = 63\n")
+                with self.assertRaises(RuntimeError):
+                    load_environment("host_test")
+
     def test_discovery_schema_override_and_persistence(self):
         env = parse('''$schema controls
   enabled bool = false

@@ -12,7 +12,7 @@ derives DIPL custom units named `arepo_length`, `arepo_mass`, and
 declares derived units such as `arepo_time` and `arepo_density`. All code-space
 settings in the profile use those units.
 
-Each `examples/<setup>/DIPfile` declares the complete ordered input list.
+Each `examples/<setup>/DIPfile` declares the ordered model inputs.
 The generator discovers these manifests and loads the selected one with
 `DIP.add_project()`; there is no Python registry of source files. Paths in a
 manifest are relative to its directory, independent of the working directory.
@@ -23,28 +23,32 @@ The files are loaded in this order:
    `standard_softenings.dip` layers where appropriate, and the selected
    `examples/<setup>/profile.dip`
 3. example-owned tables, imported by the profile from named manifest sources
-4. `examples/<setup>/overrides.dip`
-5. `profiles/native_controls.dip`, which derives native switches from the
+4. `profiles/native_controls.dip`, which derives native switches from the
    final overridden values
-6. example-owned `tables.dip`, where present, which imports scientific datasets
+5. example-owned `tables.dip`, where present, which imports scientific datasets
    and resolves their output filenames from the final settings
 
-Each setup's `overrides.dip` is its user-editable fine-tuning file. Use a
-`$override` block, not ordinary late assignments. The parser collects the
-block before evaluating project inputs, replaces values at their declarations,
-and uses those replacements when evaluating dependent expressions and units.
-The manifest can keep the file after the profile; this does not delay an
-explicit override. Changes affect only the selected setup.
-
-The supplied files contain commented examples to preserve the original setups.
-Uncomment `$override` and only the assignments you want, or write a block such as:
+Each setup's `overrides.dip` is its user-editable fine-tuning file, registered
+in the DIPfile:
 
 ```dipl
-$override
-  resources
-    wall_clock
-      limit = 3600 s
-  hydrodynamics.courant_factor = 0.25
+overrides[]
+  file = "overrides.dip"
+```
+
+`DIP.add_project()` registers the overrides automatically. Write an unwrapped
+body: no `$override` directive is needed. Replacements apply at value declarations,
+so dependent expressions and units see the tuned values. Changes affect only
+the selected setup; no separate host registration is required.
+
+The supplied files contain commented examples to preserve the original setups.
+Uncomment the desired assignments and their parent paths, or write:
+
+```dipl
+resources
+  wall_clock
+    limit = 3600 s
+hydrodynamics.courant_factor = 0.25
 ```
 
 For cosmological setups, overriding `simulation.time.initial_redshift` or
@@ -54,10 +58,11 @@ overriding derived outputs directly. Existing values, including explicit
 collection members, can be targeted; overrides do not create new nodes or
 instantiate missing physics schemas.
 
-Each target may be overridden only once across the whole project. Empty
-blocks, duplicate targets, unmatched paths, type declarations, and properties
-inside override blocks are errors. Keep the file comment-only when no tuning
-is needed. Nested and dotted paths are supported; replacement units must be
+Each target may be overridden only once across the whole project. Duplicate
+targets, unmatched paths, type declarations, and properties in override bodies
+are errors. Empty or comment-only override files are allowed and leave the
+setup unchanged. Nested and dotted paths are
+supported; replacement units must be
 compatible with the declared units, and existing validation constraints remain
 in force. Reference/expression dependencies must exist when the target is
 first declared; an override does not enable forward references. Do not change
@@ -94,7 +99,8 @@ flag, such as `build.gravity.particle_mesh.grid_resolution`.
 
 ## Generate
 
-Install/build SciNumTools3's Python bindings with `$override` (including nested
+Install/build SciNumTools3's Python bindings with DIPfile `overrides[]` support
+and `$override` (including nested
 paths), `Environment.select()`, and `ValueNode.tags`/`metadata` support, then run from `dip/`:
 
 ```bash
@@ -298,7 +304,8 @@ Tests compare all sixteen setups against fingerprints of the previous
 generator's native names and values, ignoring comments, whitespace and order.
 The three formerly missing schedule fingerprints were updated to their
 upstream values; their time ordering and write flags are also checked explicitly.
-They also check schema and policy overrides, feature dependencies, unit conversion, derived
+They also check manifest-loaded overrides and their persisted provenance, schema and
+policy overrides, feature dependencies, unit conversion, derived
 switches, error reporting, and rendering from DIPH5 snapshots. Each setup runs
 in a separate process because its custom unit definitions share names with
 other setups.

@@ -1,5 +1,7 @@
 # Ordered inputs for this AREPO setup. Paths are relative to this manifest.
-# $override blocks are collected before ordinary input evaluation.
+# Overrides are registered before model evaluation.
+overrides[]
+  file = "overrides.dip"
 
 sources[]
   name = "schedule_data"
@@ -90,11 +92,8 @@ code[]
   file = "profile.dip"
 
 code[]
-  file = "overrides.dip"
-
-code[]
   file = "../../profiles/native_controls.dip"
 
-# Dataset output paths are resolved after user overrides.
+# Dataset output paths use the effective settings.
 code[]
   file = "tables.dip"
