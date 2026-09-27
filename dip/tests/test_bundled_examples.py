@@ -7,7 +7,10 @@ from pathlib import Path
 import subprocess
 import sys
 import tempfile
-import unittest
+
+import pytest
+
+from arepo_dipl.generator import SETUPS
 
 
 ROOT = Path(__file__).parents[2]
@@ -68,17 +71,17 @@ def number(value):
         return None
 
 
-class BundledExampleRegressionTests(unittest.TestCase):
-    def test_generated_settings_match_bundled_examples(self):
-        from arepo_dipl.generator import SETUPS
+def test_bundled_examples_are_covered():
+    originals = {path.parent.name for path in (ROOT / "examples").glob("*/Config.sh")
+                 if (path.parent / "param.txt").is_file()}
+    assert originals == {EXAMPLE_NAMES.get(name, name) for name in SETUPS}
 
-        originals = {path.parent.name for path in (ROOT / "examples").glob("*/Config.sh")
-                     if (path.parent / "param.txt").is_file()}
-        self.assertEqual(originals, {EXAMPLE_NAMES.get(name, name) for name in SETUPS})
 
-        # Custom unit names are registered process-wide by SciNumTools, so each
-        # setup gets a fresh interpreter, like a normal CLI invocation.
-        script = """from pathlib import Path
+@pytest.mark.parametrize("setup", sorted(SETUPS))
+def test_generated_settings_match_bundled_example(setup):
+    # Custom unit names are registered process-wide by SciNumTools, so each
+    # setup gets a fresh interpreter, like a normal CLI invocation.
+    script = """from pathlib import Path
 import sys
 from arepo_dipl.generator import generate
 from scinumtools3.dip import Environment
@@ -87,48 +90,42 @@ env = Environment()
 env.load(output / "environment.diph5")
 print(env["build.gravity.softening_types"].value)
 """
-        for setup in sorted(SETUPS):
-            with self.subTest(setup=setup), tempfile.TemporaryDirectory() as directory:
-                process = subprocess.run(
-                    [sys.executable, "-B", "-c", script, setup, directory],
-                    env={**os.environ, "PYTHONDONTWRITEBYTECODE": "1",
-                         "PYTHONPATH": f"{DIP_ROOT / 'src'}:{os.environ.get('PYTHONPATH', '')}"},
-                    capture_output=True, text=True,
-                )
-                self.assertEqual(process.returncode, 0, f"{setup}: {process.stderr}")
-                declared_softening_types = int(process.stdout.strip())
-                original = ROOT / "examples" / EXAMPLE_NAMES.get(setup, setup)
-                generated = Path(directory)
-                config = settings(generated / "Config.sh")
-                params = settings(generated / "param.txt")
-                native_softening_types = int(config.get("NSOFTTYPES") or 6)
-                self.assertEqual(declared_softening_types, native_softening_types, setup)
-                for prefix in ("SofteningComovingType", "SofteningMaxPhysType"):
-                    self.assertEqual(
-                        {name for name in params if name.startswith(prefix)},
-                        {f"{prefix}{index}" for index in range(declared_softening_types)},
-                        f"{setup}: {prefix} family count",
-                    )
-                for filename in ("Config.sh", "param.txt"):
-                    with self.subTest(filename=filename):
-                        expected = settings(original / filename)
-                        actual = settings(generated / filename)
-                        self.assertEqual(set(expected), set(actual),
-                                         f"{setup}/{filename}: missing {sorted(set(expected) - set(actual))}; "
-                                         f"extra {sorted(set(actual) - set(expected))}")
-                        for name, wanted in expected.items():
-                            found = actual[name]
-                            if wanted is None:
-                                self.assertIsNone(found, f"{setup}/{filename}: {name}")
-                            else:
-                                wanted_number, found_number = number(wanted), number(found)
-                                if wanted_number is not None and found_number is not None:
-                                    self.assertTrue(math.isclose(wanted_number, found_number,
-                                                                  rel_tol=1e-11, abs_tol=1e-12),
-                                                    f"{setup}/{filename}: {name}: {found} != {wanted}")
-                                else:
-                                    self.assertEqual(wanted, found, f"{setup}/{filename}: {name}")
-
-
-if __name__ == "__main__":
-    unittest.main()
+    with tempfile.TemporaryDirectory() as directory:
+        process = subprocess.run(
+            [sys.executable, "-B", "-c", script, setup, directory],
+            env={**os.environ, "PYTHONDONTWRITEBYTECODE": "1",
+                 "PYTHONPATH": f"{DIP_ROOT / 'src'}:{os.environ.get('PYTHONPATH', '')}"},
+            capture_output=True, text=True,
+        )
+        assert process.returncode == 0, f"{setup}: {process.stderr}"
+        declared_softening_types = int(process.stdout.strip())
+        original = ROOT / "examples" / EXAMPLE_NAMES.get(setup, setup)
+        generated = Path(directory)
+        config = settings(generated / "Config.sh")
+        params = settings(generated / "param.txt")
+        native_softening_types = int(config.get("NSOFTTYPES") or 6)
+        assert declared_softening_types == native_softening_types, setup
+        for prefix in ("SofteningComovingType", "SofteningMaxPhysType"):
+            assert {name for name in params if name.startswith(prefix)} == {
+                f"{prefix}{index}" for index in range(declared_softening_types)
+            }, f"{setup}: {prefix} family count"
+        for filename in ("Config.sh", "param.txt"):
+            expected = settings(original / filename)
+            actual = settings(generated / filename)
+            assert set(expected) == set(actual), (
+                f"{setup}/{filename}: missing {sorted(set(expected) - set(actual))}; "
+                f"extra {sorted(set(actual) - set(expected))}"
+            )
+            for name, wanted in expected.items():
+                found = actual[name]
+                if wanted is None:
+                    assert found is None, f"{setup}/{filename}: {name}"
+                else:
+                    wanted_number, found_number = number(wanted), number(found)
+                    if wanted_number is not None and found_number is not None:
+                        assert math.isclose(wanted_number, found_number,
+                                            rel_tol=1e-11, abs_tol=1e-12), (
+                            f"{setup}/{filename}: {name}: {found} != {wanted}"
+                        )
+                    else:
+                        assert wanted == found, f"{setup}/{filename}: {name}"

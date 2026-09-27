@@ -5,7 +5,7 @@ examples. DIPL describes the simulation and compile settings, their units,
 validation rules, derived values, and provenance. The generator writes native
 `Config.sh` and `param.txt` files, output schedules, scientific text tables,
 and a reloadable `environment.diph5`. It does not modify the Arepo source tree
-or the `snt3` link.
+and needs no local SciNumTools3 source checkout.
 
 ## Setup script
 
@@ -20,9 +20,10 @@ dip/setup.sh -c mhd_shock_tube
 dip/setup.sh -b -t -g mhd_shock_tube
 ```
 
-`-b` creates `dip/.venv` and builds this checkout's SciNumTools3 Python
-bindings with CMake. Later commands use that venv automatically. `-t` runs
-the tests, `-g SETUP` generates the selected example, and `-c SETUP`
+`-b` creates `dip/.venv` and installs the newest `scinumtools3>=0.8.4`,
+pytest, and their Python dependencies from PyPI. It does not use a local
+SciNumTools3 directory. Later commands use that venv automatically. `-t` runs
+the tests with pytest, `-g SETUP` generates the selected example, and `-c SETUP`
 regenerates and compiles Arepo with its generated `Config.sh`. Results go to
 `dip/generated/SETUP/`, including the compiled `Arepo` executable when `-c`
 succeeds. Use `dip/setup.sh -h` for options. Compilation requires either a

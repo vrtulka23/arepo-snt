@@ -22,6 +22,7 @@ Arepo.dSYM
 # param, Config, Makefile.systype
 /param.txt
 /Config.sh
+/snt3
 Makefile.systype
 run.sh
 

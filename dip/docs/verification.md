@@ -12,16 +12,13 @@ dip/setup.sh -g mhd_shock_tube
 dip/setup.sh -c mhd_shock_tube
 ```
 
-`-b` creates `dip/.venv` with access to the current Python's site packages,
-builds this checkout's SciNumTools3 extension with CMake in
-`dip/.snt3-build`, and links the resulting Python package into the venv.
-Both directories are ignored by Git. Later invocations use the venv by
-default; `PYTHON` explicitly selects another interpreter. `-b -t` builds and
-then tests in one invocation. CMake, a C++17 compiler, HDF5, pybind11, and
-NumPy are needed; CMake can fetch pybind11 if it is not installed, and the
-script installs NumPy into the venv if it is not available.
+`-b` creates an isolated `dip/.venv` and installs the newest `scinumtools3>=0.8.4`,
+pytest, and their dependencies from PyPI with pip. It requires package-index
+access and does not read or write a local SciNumTools3 source tree. The venv
+is ignored by Git. Later invocations use it by default; `PYTHON` explicitly
+selects another interpreter. `-b -t` installs and then tests in one invocation.
 
-`-t` runs the complete DIP test suite. `-g SETUP` generates native files into
+`-t` runs the complete DIP test suite with pytest. `-g SETUP` generates native files into
 `dip/generated/SETUP/`. `-c SETUP` regenerates the same setup and invokes
 Arepo's Makefile with that `Config.sh`; build files and the executable go into
 the same setup directory. `-g SETUP -c` is also accepted. `-c` requires a
@@ -32,18 +29,17 @@ elsewhere. Compiling does not run a simulation.
 
 The wrapper expects SciNumTools3 Python bindings with manifest overrides,
 custom units, `Environment.select()`, value tags and metadata, and DIPH5
-support. Without `-b` or an existing `dip/.venv`, it uses the existing
-`snt3/build/python` build in this checkout. The direct test command is:
+support. After `-b`, the direct test command is:
 
 ```bash
-PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=snt3/build/python:dip/src \
-  python3 -B -m unittest discover -s dip/tests -v
+PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=dip/src \
+  dip/.venv/bin/python -B -m pytest dip/tests
 ```
 
 ## What the tests establish
 
 - [`test_bundled_examples.py`](../tests/test_bundled_examples.py) generates all
-  16 setups and compares active `Config.sh` and `param.txt` names and values
+  16 setups as separate pytest cases and compares active `Config.sh` and `param.txt` names and values
   directly with the bundled Arepo examples. It ignores comments, whitespace,
   ordering, and equivalent numeric spelling, but compares path strings
   exactly. It also checks softening-family counts against Arepo's native

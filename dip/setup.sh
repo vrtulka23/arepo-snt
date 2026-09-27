@@ -7,7 +7,6 @@ AREPO_DIR=$(cd -- "$DIP_DIR/.." && pwd)
 BASE_PYTHON=${PYTHON:-python3}
 PYTHON_BIN=$BASE_PYTHON
 VENV_DIR="$DIP_DIR/.venv"
-SNT_BUILD_DIR="$DIP_DIR/.snt3-build"
 OUTPUT_ROOT=${DIP_OUTPUT_ROOT:-$DIP_DIR/generated}
 case $OUTPUT_ROOT in
   /*) ;;
@@ -22,7 +21,7 @@ Usage: dip/setup.sh -b
        dip/setup.sh -c SETUP
        dip/setup.sh -g SETUP -c
 
-  -b          Create dip/.venv and build this checkout's SciNumTools3 bindings.
+  -b          Create dip/.venv and install SciNumTools3 0.8.4+ from PyPI.
   -t          Run the DIP test suite.
   -g SETUP    Generate Config.sh, param.txt, and supporting files.
   -c [SETUP]  Generate, then compile Arepo for SETUP (or the -g setup).
@@ -100,37 +99,19 @@ if $compile && [[ -z "${SYSTYPE:-}" && ! -f "$AREPO_DIR/Makefile.systype" ]]; th
 fi
 
 if $build_venv; then
-  [[ -f "$AREPO_DIR/snt3/CMakeLists.txt" ]] || fail "SciNumTools3 source is missing at $AREPO_DIR/snt3"
-  command -v cmake >/dev/null || fail "CMake is required to build SciNumTools3"
-  "$BASE_PYTHON" -m venv --system-site-packages "$VENV_DIR"
+  "$BASE_PYTHON" -m venv --clear "$VENV_DIR"
   PYTHON_BIN="$VENV_DIR/bin/python"
-  if ! "$PYTHON_BIN" -c 'import numpy' >/dev/null 2>&1; then
-    "$PYTHON_BIN" -m pip install numpy
-  fi
-  cmake -S "$AREPO_DIR/snt3" -B "$SNT_BUILD_DIR" \
-    -DPython3_EXECUTABLE="$PYTHON_BIN" \
-    -DENABLE_UNIT_TESTS=OFF -DENABLE_BINDING_C=OFF \
-    -DENABLE_EXEC_APPS=OFF -DENABLE_EXEC_EXAMPLES=OFF \
-    -DENABLE_EXEC_BENCHMARKS=OFF -DENABLE_MAT=OFF
-  cmake --build "$SNT_BUILD_DIR" --target _snt --parallel 2
-  site_packages=$(
-    "$PYTHON_BIN" -c 'import sysconfig; print(sysconfig.get_paths()["purelib"])'
-  )
-  printf '%s\n' "$SNT_BUILD_DIR/python" > "$site_packages/arepo-scinumtools3.pth"
-  env -u PYTHONPATH "$PYTHON_BIN" -c 'from scinumtools3.dip import DIP; print("SciNumTools3 ready")'
+  "$PYTHON_BIN" -m pip install --upgrade --index-url https://pypi.org/simple 'scinumtools3>=0.8.4' pytest
+  env -u PYTHONPATH "$PYTHON_BIN" -c 'from scinumtools3.dip import DIP; parser = DIP(); parser.add_string("answer int = 42"); assert parser.parse().select("?answer")[0].value == 42; print("SciNumTools3 ready")'
 elif [[ -z "${PYTHON:-}" && -x "$VENV_DIR/bin/python" ]]; then
   PYTHON_BIN="$VENV_DIR/bin/python"
 fi
 
 export PYTHONDONTWRITEBYTECODE=1
-if [[ "$PYTHON_BIN" == "$VENV_DIR/bin/python" ]]; then
-  export PYTHONPATH="$DIP_DIR/src"
-else
-  export PYTHONPATH="$AREPO_DIR/snt3/build/python:$DIP_DIR/src${PYTHONPATH:+:$PYTHONPATH}"
-fi
+export PYTHONPATH="$DIP_DIR/src"
 
 if $run_tests; then
-  "$PYTHON_BIN" -B -m unittest discover -s "$DIP_DIR/tests" -v
+  "$PYTHON_BIN" -B -m pytest "$DIP_DIR/tests"
 fi
 
 if $generate; then
