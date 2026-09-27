@@ -17,6 +17,8 @@ build : arepo_build
     multiple_node_softening = true
     individual_softening_type_mask = 32
     softening_types = 2
+      export
+        enabled = true
   time
     tree_based_timesteps = true
   precision
@@ -40,6 +42,10 @@ build : arepo_build
 input
   initial_conditions
     path = "./ICs_1_1_merger_30_15_45_0_rmin10_start320_lowres.dat-with-grid"
+resources
+  wall_clock
+    limit = 93000 s
+    restart_interval = 12000 s
 output
   schedule
     enabled = true
@@ -57,6 +63,13 @@ simulation
     minimum_step = 2e-8
     statistics_interval = 0.0234375
     snapshot_interval = 0
+cosmology
+  hubble_parameter = 0.6774
+hydrodynamics
+  initial_gas_temperature = 244.8095 K
+  minimum_gas_temperature = 5 K
+  minimum_startup_density = 1e-10 arepo_density
+  maximum_neighbor_deviation = 4
 gravity
   force_accuracy
     integration = 0.012

@@ -259,6 +259,8 @@ $schema arepo_build
       ?rationale "Must match the number of configured SofteningComovingTypeN entries."
       ?scientific_impact "Defines the available gravity-softening families that particle types may share."
       ?category "gravity softening"
+      export : arepo_export
+        enabled = false
       
   time
     force_equal_timesteps bool = false
@@ -414,12 +416,16 @@ $schema arepo_build
         ?descr "Particle-type bit mask used as FoF primary linking tracers."
         ?native "FOF_PRIMARY_LINK_TYPES"
         !tags ["arepo:config"]
+        export : arepo_export
+          requires_enabled = ["build.analysis.fof"]
         
       secondary_link_type_mask int = 0
         !condition ({.} >= 0)
         ?descr "Particle-type bit mask attached to nearest FoF primary tracers."
         ?native "FOF_SECONDARY_LINK_TYPES"
         !tags ["arepo:config"]
+        export : arepo_export
+          requires_enabled = ["build.analysis.fof"]
         
     subfind bool = false
       ?descr "Compile the Subfind substructure finder; requires FoF."

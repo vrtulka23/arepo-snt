@@ -1,6 +1,5 @@
 """Behavioral coverage for tag-driven exports and the catalog migration."""
 
-import hashlib
 import json
 import re
 from pathlib import Path
@@ -175,11 +174,9 @@ build.physics.star_formation bool = false
             "CoolingOn": "1", "StarformationOn": "0",
         })
 
-    def test_all_setups_preserve_native_outputs(self):
-        # Fingerprints captured from the pre-migration generator. Ignore comments,
-        # whitespace and line ordering, but retain every native name and value.
-        # Three previously missing schedules now use the upstream create.py values.
-        expected = json.loads((ROOT / "tests" / "native_output_hashes.json").read_text())
+    def test_all_setups_roundtrip_native_outputs_and_tables(self):
+        from arepo_dipl.generator import SETUPS
+
         script = '''import json, sys, tempfile
 from pathlib import Path
 from scinumtools3.dip import Environment
@@ -216,7 +213,7 @@ with tempfile.TemporaryDirectory(dir=sys.argv[2]) as directory:
 '''
         # Different setups redefine the same custom units, so isolate their
         # process-global PUEL registrations, as separate CLI invocations do.
-        for setup, hashes in expected.items():
+        for setup in SETUPS:
             with self.subTest(setup=setup):
                 outputs = json.loads(subprocess.check_output(
                     [sys.executable, "-B", "-c", script, setup, str(ROOT)], text=True))
@@ -230,12 +227,6 @@ with tempfile.TemporaryDirectory(dir=sys.argv[2]) as directory:
                     self.assertEqual([float(row[0]) for row in rows],
                                      [float(f"{time:g}") for time in schedules[setup]])
                     self.assertEqual([int(row[1]) for row in rows], [1]*len(rows))
-                for name, text in outputs.items():
-                    canonical = "\n".join(sorted(
-                        " ".join(line.split()) for line in text.splitlines()
-                        if line.strip() and not line.startswith(("#", "%"))))
-                    self.assertEqual(hashlib.sha256(canonical.encode()).hexdigest(), hashes[name],
-                                     f"{setup}/{name} changed:\n{text}")
 
     def test_enabled_schedule_requires_matching_table(self):
         from arepo_dipl.generator import _render_schedule

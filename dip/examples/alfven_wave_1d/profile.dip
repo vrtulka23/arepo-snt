@@ -28,6 +28,12 @@ build : arepo_build
 resources
   memory
     per_rank = 1500
+input
+  initial_conditions
+    path = "ics"
+output
+  snapshots
+    directory = "output/"
 simulation
   time
     end = 2

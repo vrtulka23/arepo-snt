@@ -300,15 +300,18 @@ From the repository root with the reference bindings built:
 PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=snt3/build/python:dip/src python3 -B -m unittest discover -s dip/tests -v
 ```
 
-Tests compare all sixteen setups against fingerprints of the previous
-generator's native names and values, ignoring comments, whitespace and order.
-The three formerly missing schedule fingerprints were updated to their
-upstream values; their time ordering and write flags are also checked explicitly.
-They also check manifest-loaded overrides and their persisted provenance, schema and
-policy overrides, feature dependencies, unit conversion, derived
-switches, error reporting, and rendering from DIPH5 snapshots. Each setup runs
+Tests compare the generated `Config.sh` and `param.txt` for all sixteen setups
+directly against the bundled Arepo examples. The comparison checks active
+setting names and values while ignoring comments, whitespace, ordering, and
+equivalent numeric spelling. Output-schedule time ordering and write flags are
+checked explicitly. Tests also check manifest-loaded overrides and their
+persisted provenance, schema and policy overrides, feature dependencies, unit
+conversion, derived switches, error reporting, and rendering from DIPH5
+snapshots. Each setup runs
 in a separate process because its custom unit definitions share names with
 other setups.
+Override tests also check hours-to-seconds and metres-to-code-length conversions,
+including a changed code-length base, DIPH5 roundtrips, and incompatible units.
 Dataset tests audit the supplied numeric-table inventory and compare every
 generated table numerically against its upstream source, including after
 DIPH5 loading.

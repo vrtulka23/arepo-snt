@@ -9,6 +9,7 @@ $schema mesh_regularization
     !tags ["arepo:param"]
     ?performance_impact "Controls the strength of mesh-generator motion used to restore cell roundness."
     ?category "mesh regularization"
+    export : arepo_export
 
   maximum_face_angle_factor float = 2.25
     !condition ({.} > 0)
