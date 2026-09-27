@@ -47,7 +47,7 @@ assert _render_parameters(loaded) == text
             [sys.executable, "-B", "-c", script, str(manifest), str(output),
              str(folder / "environment.diph5")],
             env={**os.environ, "PYTHONDONTWRITEBYTECODE": "1",
-                 "PYTHONPATH": f"{ROOT / 'snt3/build/python'}:{ROOT / 'dip/src'}"},
+                 "PYTHONPATH": f"{ROOT / 'dip/src'}:{os.environ.get('PYTHONPATH', '')}"},
             capture_output=True, text=True,
         )
         values = {}

@@ -1,4 +1,6 @@
 generated/
+.venv/
+.snt3-build/
 __pycache__/
 .pytest_cache/
 

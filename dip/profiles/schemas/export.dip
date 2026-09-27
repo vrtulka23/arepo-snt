@@ -1,6 +1,6 @@
 $schema arepo_export
   ?descr "Optional typed policy for the local AREPO exporter."
-  ?see "dip/README.md"
+  ?see "dip/docs/native-outputs.md"
   ?rationale "Defined by this integration, not by AREPO or the DIPL language. Ordinary scalar and boolean exports need no policy child."
 
   enabled bool = true

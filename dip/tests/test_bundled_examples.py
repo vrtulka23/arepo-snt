@@ -81,19 +81,34 @@ class BundledExampleRegressionTests(unittest.TestCase):
         script = """from pathlib import Path
 import sys
 from arepo_dipl.generator import generate
-generate(Path(sys.argv[2]), sys.argv[1])
+from scinumtools3.dip import Environment
+output = generate(Path(sys.argv[2]), sys.argv[1])
+env = Environment()
+env.load(output / "environment.diph5")
+print(env["build.gravity.softening_types"].value)
 """
         for setup in sorted(SETUPS):
             with self.subTest(setup=setup), tempfile.TemporaryDirectory() as directory:
                 process = subprocess.run(
                     [sys.executable, "-B", "-c", script, setup, directory],
                     env={**os.environ, "PYTHONDONTWRITEBYTECODE": "1",
-                         "PYTHONPATH": f"{ROOT / 'snt3/build/python'}:{DIP_ROOT / 'src'}"},
+                         "PYTHONPATH": f"{DIP_ROOT / 'src'}:{os.environ.get('PYTHONPATH', '')}"},
                     capture_output=True, text=True,
                 )
                 self.assertEqual(process.returncode, 0, f"{setup}: {process.stderr}")
+                declared_softening_types = int(process.stdout.strip())
                 original = ROOT / "examples" / EXAMPLE_NAMES.get(setup, setup)
                 generated = Path(directory)
+                config = settings(generated / "Config.sh")
+                params = settings(generated / "param.txt")
+                native_softening_types = int(config.get("NSOFTTYPES") or 6)
+                self.assertEqual(declared_softening_types, native_softening_types, setup)
+                for prefix in ("SofteningComovingType", "SofteningMaxPhysType"):
+                    self.assertEqual(
+                        {name for name in params if name.startswith(prefix)},
+                        {f"{prefix}{index}" for index in range(declared_softening_types)},
+                        f"{setup}: {prefix} family count",
+                    )
                 for filename in ("Config.sh", "param.txt"):
                     with self.subTest(filename=filename):
                         expected = settings(original / filename)

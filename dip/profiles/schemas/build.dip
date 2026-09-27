@@ -251,12 +251,12 @@ $schema arepo_build
       ?scientific_impact "Enables potential-energy diagnostics for global energy-conservation tests."
       ?category "gravity diagnostics"
         
-    softening_types int = 1
-      !condition ({.} >= 1)
+    softening_types int = 6
+      !condition ({.} >= 2)
       ?descr "Number of available gravitational-softening families."
       ?native "NSOFTTYPES"
       !tags ["arepo:config"]
-      ?rationale "Must match the number of configured SofteningComovingTypeN entries."
+      ?rationale "Defaults to Arepo's NTYPES (six in this source tree) when NSOFTTYPES is omitted; must match the configured SofteningComovingTypeN entries."
       ?scientific_impact "Defines the available gravity-softening families that particle types may share."
       ?category "gravity softening"
       export : arepo_export
