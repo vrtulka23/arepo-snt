@@ -1,5 +1,5 @@
-# Derived native switches. Load after all sources and user overrides because
-# DIPL references capture the values available when their definition is read.
+# Derived native switches. Load after the profiles that define their inputs.
+# $override replacements are already effective when those inputs are declared.
 # Keeping these translations in DIPL makes them visible in environment.diph5.
 native_controls
   comoving bool = ({?simulation.time.coordinate} == "scale_factor")

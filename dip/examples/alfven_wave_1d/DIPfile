@@ -1,5 +1,5 @@
 # Ordered inputs for this AREPO setup. Paths are relative to this manifest.
-# User overrides precede derived native controls.
+# $override blocks are collected before ordinary input evaluation.
 
 code[]
   file = "../../profiles/schemas/export.dip"

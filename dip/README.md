@@ -29,11 +29,43 @@ The files are loaded in this order:
 6. example-owned `tables.dip`, where present, which imports scientific datasets
    and resolves their output filenames from the final settings
 
-Each setup's `overrides.dip` is its user-editable overlay. Add ordinary DIPL
-modifications there; they affect only that setup. Do not edit derived unit
-definitions or generated files.
-Local overlays isolate experiments; they do not change DIPL's evaluation
-order or automatically recompute expressions already evaluated in a profile.
+Each setup's `overrides.dip` is its user-editable fine-tuning file. Use a
+`$override` block, not ordinary late assignments. The parser collects the
+block before evaluating project inputs, replaces values at their declarations,
+and uses those replacements when evaluating dependent expressions and units.
+The manifest can keep the file after the profile; this does not delay an
+explicit override. Changes affect only the selected setup.
+
+The supplied files contain commented examples to preserve the original setups.
+Uncomment `$override` and only the assignments you want, or write a block such as:
+
+```dipl
+$override
+  resources
+    wall_clock
+      limit = 3600 s
+  hydrodynamics.courant_factor = 0.25
+```
+
+For cosmological setups, overriding `simulation.time.initial_redshift` or
+`cosmology.matter_density` allows their downstream scale-factor and density
+expressions to use the tuned inputs. Prefer these independent inputs over
+overriding derived outputs directly. Existing values, including explicit
+collection members, can be targeted; overrides do not create new nodes or
+instantiate missing physics schemas.
+
+Each target may be overridden only once across the whole project. Empty
+blocks, duplicate targets, unmatched paths, type declarations, and properties
+inside override blocks are errors. Keep the file comment-only when no tuning
+is needed. Nested and dotted paths are supported; replacement units must be
+compatible with the declared units, and existing validation constraints remain
+in force. Reference/expression dependencies must exist when the target is
+first declared; an override does not enable forward references. Do not change
+generated files to tune an experiment.
+
+The effective value and its override provenance are retained in DIPH5. Inspect
+`env.select("?path.to.value")[0].override` and
+`env["path.to.value"].provenance.override_code` after parsing or loading.
 
 In particular, every profile instantiates the shared `arepo_build` schema in
 `profiles/schemas/build.dip`. The other shared contracts are split by concern:
@@ -62,8 +94,8 @@ flag, such as `build.gravity.particle_mesh.grid_resolution`.
 
 ## Generate
 
-Install/build SciNumTools3's Python bindings with `Environment.select()` and
-`ValueNode.tags`/`metadata` support, then run from `dip/`:
+Install/build SciNumTools3's Python bindings with `$override` (including nested
+paths), `Environment.select()`, and `ValueNode.tags`/`metadata` support, then run from `dip/`:
 
 ```bash
 PYTHONPATH=src python3 -m arepo_dipl generate --output generated
@@ -153,14 +185,15 @@ renderer. Example-local parameters are exported where they are declared;
 the three examples needing `CellShapingFactor` explicitly set its
 `export.enabled` to true. Their native outputs are unchanged.
 `?requires` remains descriptive metadata, not an implicit export condition.
-Value overrides preserve schema tags; an explicit `!tags` assignment replaces
-the tag list, so include all intended export tags when changing it.
+`$override` preserves schema tags and metadata. Changing those contracts belongs
+in the schema/profile declarations, not in a fine-tuning override block.
 
 Outputs are sorted by full DIPL path for stable results before and after
 DIPH5 persistence. Unknown or incorrectly typed export fields, legacy policy
 tags, missing native names, and duplicate active native names raise errors.
 `profiles/native_controls.dip` supplies derived runtime switches after the
-user overlay because DIPL references capture values at definition time.
+profiles declare their inputs. Explicit overrides have already taken effect
+at those input declarations.
 
 The manifests select source files. Python renders indexed softening families and
 output-schedule tables. `inventory.py` scans the untouched AREPO
