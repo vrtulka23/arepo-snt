@@ -2,8 +2,12 @@
 
 from __future__ import annotations
 
+import os
 from pathlib import Path
+import tempfile
 from typing import Any
+
+from scinumtools3.dip import Adapter, run_adapter
 
 from .rendering import GenerationError, format_value, render_native, value_at
 from .tables import render_tables
@@ -95,28 +99,42 @@ def _render_schedule(env: Any) -> str:
 
 def generate(output: Path, setup: str = "cosmological_star_formation") -> Path:
     env = load_environment(setup)
-    datasets = render_tables(env)
-    reserved = {"Config.sh", "param.txt", "environment.diph5"}
-    destinations = {}
+    adapter = ArepoAdapter()
+    if not output.exists() and not output.is_symlink():
+        run_adapter(env, adapter, output, "environment.diph5")
+        return output
 
-    def add_output(filename: str, content: str) -> None:
-        destination = (output / filename).resolve()
-        if (not destination.is_relative_to(output.resolve()) or destination == output.resolve()
-                or destination.name in reserved or destination in destinations):
-            raise GenerationError(f"Invalid or conflicting output path `{filename}`.")
-        if any(destination in other.parents or other in destination.parents for other in destinations):
-            raise GenerationError(f"Conflicting file and directory output paths for `{filename}`.")
-        destinations[destination] = content
-
-    if _value(env, "output.schedule.enabled"):
-        add_output(_value(env, "output.schedule.filename"), _render_schedule(env))
-    for filename, content in datasets.items():
-        add_output(filename, content)
-    output.mkdir(parents=True, exist_ok=True)
-    (output / "Config.sh").write_text(_render_config(env))
-    (output / "param.txt").write_text(_render_parameters(env))
-    env.save(output / "environment.diph5")
-    for destination, content in destinations.items():
-        destination.parent.mkdir(parents=True, exist_ok=True)
-        destination.write_text(content)
+    if not output.is_dir() or output.is_symlink():
+        raise GenerationError(f"Invalid output directory `{output}`.")
+    # SNT3 refuses to overwrite files. Stage a fresh run, then replace only
+    # generated files so an existing compiled executable and build stay intact.
+    with tempfile.TemporaryDirectory(prefix="arepo-dipl-", dir=output.parent) as directory:
+        stage = Path(directory)
+        written = run_adapter(env, adapter, stage, "environment.diph5")
+        destinations = [(source, output / source.relative_to(stage)) for source in written]
+        root = output.resolve()
+        for _, destination in destinations:
+            if (not destination.resolve().is_relative_to(root) or destination.is_symlink()
+                    or destination.exists() and not destination.is_file()):
+                raise GenerationError(f"Invalid or conflicting output path `{destination}`.")
+            parent = destination.parent
+            while parent != output:
+                if parent.is_symlink() or parent.exists() and not parent.is_dir():
+                    raise GenerationError(f"Invalid or conflicting output path `{destination}`.")
+                parent = parent.parent
+        for source, destination in destinations:
+            destination.parent.mkdir(parents=True, exist_ok=True)
+            os.replace(source, destination)
     return output
+
+
+class ArepoAdapter(Adapter):
+    """Plan the native files for an evaluated Arepo environment."""
+
+    def plan(self, env: Any, context: Any) -> None:
+        context.add_text("Config.sh", _render_config(env))
+        context.add_text("param.txt", _render_parameters(env))
+        if _value(env, "output.schedule.enabled"):
+            context.add_text(Path(_value(env, "output.schedule.filename")), _render_schedule(env))
+        for filename, content in render_tables(env).items():
+            context.add_text(Path(filename), content)

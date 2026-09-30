@@ -44,11 +44,6 @@ class CatalogTests(unittest.TestCase):
         self.assertTrue(expected <= set(SETUPS))
         self.assertEqual(16, len(SETUPS))
 
-    def test_generator_persists_the_complete_diph5_environment(self):
-        generator = (ROOT / "dip" / "src" / "arepo_dipl" / "generator.py").read_text()
-        self.assertIn('env.save(output / "environment.diph5")', generator)
-        self.assertNotIn("provenance.json", generator)
-
     def test_every_profile_instantiates_the_shared_runtime_schemas(self):
         schemas = ROOT / "dip" / "profiles" / "schemas"
         build_schema = (schemas / "build.dip").read_text()

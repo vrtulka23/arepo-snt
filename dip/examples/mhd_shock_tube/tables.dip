@@ -3,6 +3,5 @@ datasets.alpha_3
   output_file str = "alpha_3.dat"
     !tags ["arepo:dataset"]
     ?see "examples/mhd_shocktube_1d/alpha_3.dat"
-  columns str[:] = ["position", "density", "velocity_x", "velocity_y", "velocity_z", "magnetic_x", "magnetic_y", "magnetic_z", "pressure"]
   data table = {dataset_alpha_3}
 

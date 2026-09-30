@@ -1,12 +1,27 @@
 # Units and expressions
 
-## Physical bases become Arepo code units
+## Selecting the code-unit bases
 
-Every setup selects physical length, mass, and velocity bases. Most idealised
-examples use [`standard_units.dip`](../profiles/standard_units.dip), where one
-code length is `0.01 m` (one centimetre). Cosmological volumes use
-[`cosmological_units.dip`](../profiles/cosmological_units.dip); the original
-MHD shock tube uses its [own bases](../examples/mhd_shock_tube/units.dip).
+Each example's `DIPfile` explicitly loads one file defining
+`code_units.length`, `code_units.mass`, and `code_units.velocity` before it
+loads the derived unit definitions. There is no automatic selection based on
+the setup name or its compile-time flags.
+
+| Base profile | Setups | One code length | One code mass | One code velocity |
+| --- | ---: | --- | --- | --- |
+| [`standard_units.dip`](../profiles/standard_units.dip) | 10 | 1 cm | 1 g | 1 cm/s |
+| [`cosmological_units.dip`](../profiles/cosmological_units.dip) | 5 | 1 kpc | 10¹⁰ solar masses | 1 km/s |
+| [MHD shock tube `units.dip`](../examples/mhd_shock_tube/units.dip) | 1 | 1 cm | 1 g | 1 cm/s |
+
+The five setups using the larger bases include the isolated-galaxy example;
+the profile name describes its unit scale, not whether the simulation uses
+cosmological integration. For example, the
+[Alfvén-wave manifest](../examples/alfven_wave_1d/DIPfile) loads the standard
+bases, while the [cosmological star-formation manifest](../examples/cosmological_star_formation/DIPfile)
+loads the larger bases. The MHD shock tube keeps a local file to mirror its
+original setup, although its current values equal the standard bases.
+
+## Physical units and derived Arepo units
 
 [`arepo_units.dip`](../profiles/schemas/arepo_units.dip) derives custom DIPL
 units by referring to those selected values:
@@ -26,11 +41,19 @@ If the override also changes `code_units.length` to `2 cm`, `1 m` emits
 time conversion (`1 h` to `3600 s`) and rejection of a length set in seconds.
 The tests reload DIPH5 and check that native rendering stays the same.
 
-`code_units.length`, `mass`, and `velocity` each have an export policy that
-converts their physical value to the cgs units expected by Arepo. Other
-code-space values usually preserve their numeric value after conversion into
-the selected `arepo_*` unit. The conversion is performed by SciNumTools
-through the [renderer](../src/arepo_dipl/rendering.py).
+The three `code_units.*` values are physical quantities. Their export
+policies convert them to `cm`, `g`, and `cm/s` for Arepo's
+`UnitLength_in_cm`, `UnitMass_in_g`, and `UnitVelocity_in_cm_per_s` parameters.
+The `arepo_*` names are derived DIPL units for values such as box sizes,
+softening lengths, and densities. SciNumTools performs the requested unit
+conversion when the [renderer](../src/arepo_dipl/rendering.py) exports a
+parameter. An override of a base unit is applied before the derived units
+and dependent values are evaluated.
+
+Choosing the larger unit bases does not enable cosmological integration.
+[`native_controls.dip`](../profiles/native_controls.dip) sets
+`ComovingIntegrationOn` from `simulation.time.coordinate`: `"scale_factor"`
+enables it, while `"linear"` disables it.
 
 ## Expressions connect scientific inputs to native values
 

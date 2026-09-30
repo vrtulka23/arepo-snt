@@ -21,6 +21,8 @@ typed settings for cases that need extra policy:
 
 For example, [`code_units.length`](../profiles/standard_units.dip) declares
 `export.units = "cm"` and `?native "UnitLength_in_cm"`. The
+[selected unit-base profile](units-and-expressions.md) similarly exports mass
+in grams and velocity in centimetres per second. The
 [mesh refinement schema](../profiles/schemas/mesh.dip) exports
 `ReferenceGasPartMass` only when `build.mesh.refinement` is enabled. The
 [build schema](../profiles/schemas/build.dip) defaults `NSOFTTYPES` export to
@@ -50,20 +52,21 @@ Scientific numeric tables live in `.dipt` files and are registered as named
 `sources[]` in each manifest. For example, the
 [gravity-only manifest](../examples/cosmological_gravity_only/DIPfile)
 registers mass-reference tables; its [tables.dip](../examples/cosmological_gravity_only/tables.dip)
-imports them under `datasets` and declares output filenames and ordered
-columns. The [table renderer](../src/arepo_dipl/tables.py) emits their native
-text layouts at 17 significant digits. The column list is explicit because
-the current SciNumTools Python API does not expose durable table-column order
-after DIPH5 loading. There are 15 distinct additional numeric tables and 16
-imports across the setups, plus the five schedules and the shared cooling
+imports them under `datasets` and declares output filenames. The
+[table renderer](../src/arepo_dipl/tables.py) uses SciNumTools3's ordered
+`inspect_table()` result and emits native text layouts at 17 significant digits.
+The order survives DIPH5 loading. There are 15 distinct additional numeric
+tables and 16 imports across the setups, plus the five schedules and shared cooling
 table. Binary initial conditions and external generator configurations keep
 their existing roles.
 
 ## DIPH5 snapshot
 
-[`generate()`](../src/arepo_dipl/generator.py) writes `Config.sh`, `param.txt`,
-the selected tables and schedule, and `environment.diph5`. DIPH5 stores
-evaluated values, units, custom units, schema metadata, tags, source and
+[`generate()`](../src/arepo_dipl/generator.py) uses the SciNumTools3 adapter
+runner to write `Config.sh`, `param.txt`, the selected tables and schedule, and
+`environment.diph5`. When regenerating into an existing directory, it stages
+fresh outputs before replacing generated files and preserves an existing build.
+DIPH5 stores evaluated values, units, custom units, schema metadata, tags, source and
 override provenance, collections, and table data. A fresh process can load
 the snapshot and render the native files again without the DIPL sources.
 The [roundtrip tests](../tests/test_rendering.py) verify that behavior.

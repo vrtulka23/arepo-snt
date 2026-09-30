@@ -2,6 +2,8 @@
 
 from typing import Any
 
+from scinumtools3.dip import inspect_table
+
 from .rendering import ExportPolicy, GenerationError, value_at
 
 
@@ -20,8 +22,8 @@ def render_tables(env: Any) -> dict[str, str]:
         filename = node.value
         if filename in outputs:
             raise GenerationError(f"Duplicate dataset output `{filename}`.")
-        columns = _array(value_at(env, dataset + ".columns"))
-        values = [_array(value_at(env, dataset + ".data." + column)) for column in columns]
+        table = inspect_table(env, dataset + ".data")
+        values = [_array(value_at(env, column.path)) for column in table.columns]
         if not values or len({len(column) for column in values}) != 1:
             raise GenerationError(f"Dataset `{dataset}` has missing or unequal-length columns.")
         preamble = env.select("?" + dataset + ".preamble")

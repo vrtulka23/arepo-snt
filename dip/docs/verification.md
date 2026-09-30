@@ -12,7 +12,7 @@ dip/setup.sh -g mhd_shock_tube
 dip/setup.sh -c mhd_shock_tube
 ```
 
-`-b` creates an isolated `dip/.venv` and installs the newest `scinumtools3>=0.8.4`,
+`-b` creates an isolated `dip/.venv` and installs the newest `scinumtools3>=0.8.6`,
 pytest, and their dependencies from PyPI with pip. It requires package-index
 access and does not read or write a local SciNumTools3 source tree. The venv
 is ignored by Git. Later invocations use it by default; `PYTHON` explicitly
@@ -39,8 +39,9 @@ PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=dip/src \
 ## What the tests establish
 
 - [`test_bundled_examples.py`](../tests/test_bundled_examples.py) generates all
-  16 setups as separate pytest cases and compares active `Config.sh` and `param.txt` names and values
-  directly with the bundled Arepo examples. It ignores comments, whitespace,
+  16 setups as separate pytest cases and compares active `Config.sh` and
+  `param.txt` names and values directly with the bundled Arepo examples. It
+  ignores comments, whitespace,
   ordering, and equivalent numeric spelling, but compares path strings
   exactly. It also checks softening-family counts against Arepo's native
   default or explicit `NSOFTTYPES`.
@@ -58,7 +59,8 @@ PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=dip/src \
 - [`table_inventory.json`](../tests/table_inventory.json) tracks the supplied
   numeric datasets. Tests compare rendered values with the upstream tables.
 
-The checks prove source-file equivalence for the bundled examples and the
-behavior listed above. Compiling with `-c` additionally checks the selected
+The checks establish equivalence of active settings for the bundled examples
+within the numeric tolerances used by the tests; they do not compare comments,
+ordering, or file bytes. Compiling with `-c` additionally checks the selected
 configuration against the local compiler and libraries. Running a physical
 simulation and checking its science outputs is a separate step.

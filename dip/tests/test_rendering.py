@@ -228,6 +228,24 @@ with tempfile.TemporaryDirectory(dir=sys.argv[2]) as directory:
                                      [float(f"{time:g}") for time in schedules[setup]])
                     self.assertEqual([int(row[1]) for row in rows], [1]*len(rows))
 
+    def test_regeneration_preserves_existing_build(self):
+        from arepo_dipl.generator import generate
+
+        env = parse('output.schedule.enabled bool = false\n'
+                    'gravity.softenings.particle_type_map int[:] = []\n')
+        with tempfile.TemporaryDirectory(dir=ROOT) as directory:
+            output = Path(directory) / "generated"
+            with patch("arepo_dipl.generator.load_environment", return_value=env):
+                generate(output)
+                (output / "Arepo").write_text("compiled")
+                (output / "param.txt").write_text("stale")
+                generate(output)
+            self.assertEqual((output / "Arepo").read_text(), "compiled")
+            self.assertNotEqual((output / "param.txt").read_text(), "stale")
+            loaded = Environment()
+            loaded.load(output / "environment.diph5")
+            self.assertFalse(loaded["output.schedule.enabled"].value)
+
     def test_enabled_schedule_requires_matching_table(self):
         from arepo_dipl.generator import _render_schedule
 
@@ -267,20 +285,24 @@ write_flag int
                 output = Path(directory) / "generated"
                 env = parse(source.replace("./schedules/custom.txt", filename))
                 with patch("arepo_dipl.generator.load_environment", return_value=env):
-                    with self.assertRaisesRegex(GenerationError, "output path"):
+                    with self.assertRaisesRegex(RuntimeError, "output path|conflicts"):
                         generate(output)
                 self.assertFalse(output.exists())
 
         dataset = '''datasets.reference
   output_file str = "schedules/custom.txt"
     !tags ["arepo:dataset"]
-  columns str[:] = ["x"]
-  data.x float[:] = [1, 2]
+  data table = """
+x float
+---
+1
+2
+"""
 '''
         with tempfile.TemporaryDirectory(dir=ROOT) as directory:
             env = parse(source + dataset)
             with patch("arepo_dipl.generator.load_environment", return_value=env):
-                with self.assertRaisesRegex(GenerationError, "conflicting output path"):
+                with self.assertRaisesRegex(RuntimeError, "conflicts"):
                     generate(Path(directory) / "generated")
 
     def test_all_supplied_numeric_tables_are_in_inventory(self):

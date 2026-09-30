@@ -9,7 +9,8 @@ and needs no local SciNumTools3 source checkout.
 
 ## Setup script
 
-The executable [setup.sh](setup.sh) runs the local build and example workflow.
+The executable [setup.sh](setup.sh) runs the dependency, test, generation, and
+Arepo build workflow.
 From the repository root:
 
 ```bash
@@ -20,7 +21,7 @@ dip/setup.sh -c mhd_shock_tube
 dip/setup.sh -b -t -g mhd_shock_tube
 ```
 
-`-b` creates `dip/.venv` and installs the newest `scinumtools3>=0.8.4`,
+`-b` creates `dip/.venv` and installs the newest `scinumtools3>=0.8.6`,
 pytest, and their Python dependencies from PyPI. It does not use a local
 SciNumTools3 directory. Later commands use that venv automatically. `-t` runs
 the tests with pytest, `-g SETUP` generates the selected example, and `-c SETUP`
@@ -47,6 +48,16 @@ simulation.domain.box.size = 2 m
 The exported time limit is `3600` seconds; this example's centimetre code
 length makes the exported box size `200`. The [unit override tests](tests/test_override_units.py)
 exercise those conversions through a real setup manifest.
+
+Each example's `DIPfile` explicitly selects its three physical code-unit
+bases. Ten setups use centimetre/gram/centimetre-per-second bases from
+[`standard_units.dip`](profiles/standard_units.dip); five use the larger
+[`cosmological_units.dip`](profiles/cosmological_units.dip) bases; the MHD
+shock tube has a local [`units.dip`](examples/mhd_shock_tube/units.dip) with
+the standard numerical bases. The shared [`arepo_units.dip`](profiles/schemas/arepo_units.dip)
+then derives `arepo_length`, `arepo_time`, and other units from whichever
+bases the manifest loaded. These unit scales are separate from the switch
+for cosmological integration; see [Units and expressions](docs/units-and-expressions.md).
 
 ## Read by topic
 

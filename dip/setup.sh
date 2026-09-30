@@ -21,7 +21,7 @@ Usage: dip/setup.sh -b
        dip/setup.sh -c SETUP
        dip/setup.sh -g SETUP -c
 
-  -b          Create dip/.venv and install SciNumTools3 0.8.4+ from PyPI.
+  -b          Create dip/.venv and install SciNumTools3 0.8.6+ from PyPI.
   -t          Run the DIP test suite.
   -g SETUP    Generate Config.sh, param.txt, and supporting files.
   -c [SETUP]  Generate, then compile Arepo for SETUP (or the -g setup).
@@ -101,7 +101,7 @@ fi
 if $build_venv; then
   "$BASE_PYTHON" -m venv --clear "$VENV_DIR"
   PYTHON_BIN="$VENV_DIR/bin/python"
-  "$PYTHON_BIN" -m pip install --upgrade --index-url https://pypi.org/simple 'scinumtools3>=0.8.4' pytest
+  "$PYTHON_BIN" -m pip install --upgrade --index-url https://pypi.org/simple 'scinumtools3>=0.8.6' pytest
   env -u PYTHONPATH "$PYTHON_BIN" -c 'from scinumtools3.dip import DIP; parser = DIP(); parser.add_string("answer int = 42"); assert parser.parse().select("?answer")[0].value == 42; print("SciNumTools3 ready")'
 elif [[ -z "${PYTHON:-}" && -x "$VENV_DIR/bin/python" ]]; then
   PYTHON_BIN="$VENV_DIR/bin/python"

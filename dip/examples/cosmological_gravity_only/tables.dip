@@ -3,7 +3,6 @@ datasets.inputspec_ics
   output_file str = "L50n32/inputspec_ics.txt"
     !tags ["arepo:dataset"]
     ?see "examples/cosmo_box_gravity_only_3d/L50n32/inputspec_ics.txt"
-  columns str[:] = ["column_1", "column_2", "column_3", "column_4"]
   preamble str = "         127      100.387"
   data table = {dataset_inputspec_ics}
 
@@ -11,13 +10,11 @@ datasets.Masses_L50n32_z0
   output_file str = "Masses_L50n32_z0.txt"
     !tags ["arepo:dataset"]
     ?see "examples/cosmo_box_gravity_only_3d/Masses_L50n32_z0.txt"
-  columns str[:] = ["mass"]
   data table = {dataset_Masses_L50n32_z0}
 
 datasets.Masses_L50n32_z1
   output_file str = "Masses_L50n32_z1.txt"
     !tags ["arepo:dataset"]
     ?see "examples/cosmo_box_gravity_only_3d/Masses_L50n32_z1.txt"
-  columns str[:] = ["mass"]
   data table = {dataset_Masses_L50n32_z1}
 
